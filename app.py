@@ -1,4 +1,5 @@
 from enum import unique
+from re import DEBUG
 from flask import Flask, render_template, redirect, flash, url_for, request
 from datetime import datetime
 
@@ -69,7 +70,7 @@ class User(db.Model, UserMixin):
 
     def verify_password(self, password):
         
-        if check_password_hash(self.passwordHash, password):
+        if check_password_hash(self.passwordHash, password.encode('utf-8')):
             return True
         elif bcrypt.checkpw(password.encode('utf-8'), self.passwordHash):
             return True
@@ -174,7 +175,7 @@ class RegisterForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(),])
     password = PasswordField('Password', validators=[DataRequired(),])
     confirmPassword = PasswordField('Confirm Password', validators=[EqualTo("password"),])
-    isTeacher = BooleanField('Teacher', validators=[DataRequired(),])
+    isTeacher = BooleanField('Teacher')
     submit = SubmitField('Create account')
 
 
@@ -205,7 +206,7 @@ def welcome():
             else:
                 flash('Something went wrong')
         else:
-            flash('Somethign went wrong')
+            flash('Something went wrong')
 
     return render_template('welcome.html', form=form)
 
@@ -215,13 +216,15 @@ def register():
     form = RegisterForm()
 
     if request.method == 'POST' and form.validate():
-        user = User(username = form.username.data, firstName = form.firstName.data, lastName = form.lastName.data, email = form.email.data, isTeacher = form.isTeacher.data)
+        print("post request entered reg")
+        user = User(username = form.username.data, firstName = form.firstName.data, lastName = form.lastName.data, email = form.email.data, isTeacher = form.isTeacher.data, dateJoined = datetime.today())
         user.password = form.password.data
-
-        db.session.add(user)
-        db.session.commit()
-
-        return redirect(url_for('welcome'))
+        try:
+            db.session.add(user)
+            db.session.commit()
+            return redirect(url_for('welcome'))
+        except:
+            flash("Something went wrong")
     return render_template('register.html', form = form)
 
 @app.route('/dashboard')
