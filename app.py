@@ -5,6 +5,14 @@ from datetime import datetime
 # DB dependencies
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+
+# WHAT THE FORMS!!!
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, PasswordField
+from wtforms import validators
+from wtforms.validators import DataRequired
+
+
 from sqlalchemy.orm import backref
 from sqlalchemy.ext.mutable import MutableList
 
@@ -22,12 +30,16 @@ import bcrypt
 from random import randint
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pingus.db'
 app.config['SECRET_KEY'] = 'MySuperSecretKey'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pingus.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # DB
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+db.create_all()
+db.session.commit()
 
 # Clases camelCase
 # todo lo demas snake_case
@@ -49,7 +61,6 @@ class User(db.Model, UserMixin):
     @password.setter
     def password(self, password):
         engine = randint(0,1)
-
         if engine == 0:
             self.passwordHash = generate_password_hash(password)
         else:
@@ -80,8 +91,6 @@ login_manager.login_view = 'welcome'
 def load_user(user):
     return User.query.get(user)
 
-# Clases camelCase
-# todo lo demas snake_case
 class Class(db.Model):
     __tablename__ = 'parent' 
     id = db.Column(db.Integer, nullable=False, primary_key=True)
@@ -106,44 +115,77 @@ class Quiz(db.Model):
 
     def __repr__(self):
         return 'Quiz ' + str(self.id) 
-'''
-class Activity(db.Model):
-    __tablename__ = 'child'
-    id = db.Column(db.Integer, nullable=False, primary_key=True)
-    name = db.Column(db.Text, nullable=False)
-    description = db.Column(db.Text, nullable=False)
-    datePublished = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    dateDue = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'))
+# '''
+# class Activity(db.Model):
+#     __tablename__ = 'child'
+#     id = db.Column(db.Integer, nullable=False, primary_key=True)
+#     name = db.Column(db.Text, nullable=False)
+#     description = db.Column(db.Text, nullable=False)
+#     datePublished = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+#     dateDue = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+#     parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'))
 
-    def __repr__(self):
-        return 'Activity ' + str(self.id) 
+#     def __repr__(self):
+#         return 'Activity ' + str(self.id) 
 
-class Lecture(db.Model):
-    __tablename__ = 'child'
-    id = db.Column(db.Integer, nullable=False, primary_key=True)
-    name = db.Column(db.Text, nullable=False)
-    content = db.Column(db.Text, nullable=False)
-    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'))
+# class Lecture(db.Model):
+#     __tablename__ = 'child'
+#     id = db.Column(db.Integer, nullable=False, primary_key=True)
+#     name = db.Column(db.Text, nullable=False)
+#     content = db.Column(db.Text, nullable=False)
+#     date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+#     parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'))
 
-    def __repr__(self):
-        return 'Lecture ' + str(self.id) 
-'''
+#     def __repr__(self):
+#         return 'Lecture ' + str(self.id) 
+# '''
 
-'''
-class Question(db.Model):
-    __tablename__ = 'child'
-    id = db.Column(db.Integer, nullable=False, primary_key=True)
-    content = db.Column(db.Text, nullable=False)
-    weight = db.Column(db.Float, nullable=False)
-    answers = db.Column(MutableList.as_mutable(db.PickleType), default=[])
-    parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'))
+# '''
+# class Question(db.Model):
+#     __tablename__ = 'child'
+#     id = db.Column(db.Integer, nullable=False, primary_key=True)
+#     content = db.Column(db.Text, nullable=False)
+#     weight = db.Column(db.Float, nullable=False)
+#     answers = db.Column(MutableList.as_mutable(db.PickleType), default=[])
+#     parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'))
 
-    def __repr__(self):
-        return 'Question ' + str(self.id) 
+#     def __repr__(self):
+#         return 'Question ' + str(self.id) 
 
-'''
+# '''
+
+###############
+### Forms ####
+#############
+
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(),])
+    password = PasswordField('Password', validators=[DataRequired(),])
+    submit = SubmitField('Log In!')
+
+
+###################
+#### All routes ##
+##################
+@app.route('/')
+def index():
+    if(current_user.is_authenticated):
+        return redirect(url_for("dashboard"))
+    else:
+        return redirect(url_for("welcome"))
+        
+@app.route('/welcome', methods=['GET', 'POST'])
+def welcome():
+    form = LoginForm()
+
+    if request.method == 'POST' and form.validate():
+        user = User.query.filter_by(username=form.username.data).first()
+        
+        if user:
+            if user.verify_password(form.password.data):
+                login_user(user)
+                flash(f'Welcome back {user.firstName}!')
+                return redirect(url_for('dashboard'))
 
 ###################
 #### All routes ##
@@ -161,12 +203,7 @@ def welcome():
     # username =''
     # password = ''
     # user = User.query.filter_by(username=username)
-
-    # if user:
-    #     if user.verify_password(password):
-    #         login_user(user)
-    #         flash(f'Welcome Back {user.firstName}')
-    return render_template('welcome.html')
+    return render_template('welcome.html', form=form)
 
 @app.route('/register')
 def register():
