@@ -24,6 +24,13 @@ app.config['SECRET_KEY'] = 'MySuperSecretKey'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+    
+@app.route('/welcome')
+def welcome():
+    return render_template('welcome.html')
 
 
 # Clases camelCase
