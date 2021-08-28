@@ -95,16 +95,6 @@ login_manager.login_message = 'Please Login to access'
 def load_user(id):
     return User.query.get(int(id))
 
-
-@app.route('/')
-def index():
-    if(current_user.is_authenticated):
-        return redirect(url_for("dashboard"))
-    else:
-        return redirect(url_for("welcome"))
-
-
-
 class Class(db.Model):
     __tablename__ = 'parent' 
     id = db.Column(db.Integer, nullable=False, primary_key=True)
@@ -171,24 +161,37 @@ class Quiz(db.Model):
 ###############
 ### Forms ####
 #############
-
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(),])
     password = PasswordField('Password', validators=[DataRequired(),])
     submit = SubmitField('Log In!')
 
+class RegisterForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(),])
+    fullName = StringField('Full name', validators=[DataRequired(),])
+    email = StringField('Email', validators=[DataRequired(),])
+    password = PasswordField('Password', validators=[DataRequired(),])
+    submit = SubmitField('Create account')
+
 
 ###################
 #### All routes ##
 ##################
+@app.route('/')
+def index():
+    if(current_user.is_authenticated):
+        return redirect(url_for("dashboard"))
+    else:
+        return redirect(url_for("welcome"))
+
 @app.route('/welcome', methods=['GET', 'POST'])
 def welcome():
     form = LoginForm()
-    print('hello')
+    # print('hello')
 
     if request.method == 'POST' and form.validate():
         user = User.query.filter_by(username=form.username.data).first()
-        print('found')
+        # print('found')
         
         if user:
             if user.verify_password(form.password.data):
@@ -205,7 +208,13 @@ def welcome():
 
 @app.route('/register')
 def register():
-    return render_template('register.html')
+    form = RegisterForm()
+
+    if request.method == 'POST' and form.validate():
+        user = User()
+
+        return redirect(url_for('dashboard'))
+    return render_template('register.html', form = form)
 
 @app.route('/dashboard')
 @login_required
