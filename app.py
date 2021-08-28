@@ -103,18 +103,22 @@ def register():
     return render_template('register.html')
 
 @app.route('/dashboard')
+@login_required
 def dashboard():
     return render_template('dashboard.html')
 
 @app.route('/grades')
+@login_required
 def grades():
     return render_template('grades.html')
     
 @app.route('/classes')
+@login_required
 def classes():
     return render_template('classes.html')
     
 @app.route('/profile')
+@login_required
 def profile():
     return render_template('profile.html')
 
