@@ -7,8 +7,8 @@ from flask_migrate import Migrate
 
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, DateTimeField
-from wtforms.validators import DataRequired
+from wtforms import StringField, SubmitField, PasswordField, DateTimeField, BooleanField
+from wtforms.validators import DataRequired, EqualTo
 
 
 from sqlalchemy.orm import backref
@@ -66,7 +66,7 @@ class User(db.Model, UserMixin):
 
     def verify_password(self, password):
         
-        if check_password_hash(self.passwordHash, password):
+        if check_password_hash(self.passwordHash, password.encode('utf-8')):
             return True
         elif bcrypt.checkpw(password.encode('utf-8'), self.passwordHash):
             return True
@@ -166,9 +166,12 @@ class LoginForm(FlaskForm):
 
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(),])
-    fullName = StringField('Full name', validators=[DataRequired(),])
+    firstName = StringField('First name', validators=[DataRequired(),])
+    lastName = StringField('Last name', validators=[DataRequired(),])
     email = StringField('Email', validators=[DataRequired(),])
     password = PasswordField('Password', validators=[DataRequired(),])
+    confirmPassword = PasswordField('Confirm Password', validators=[EqualTo("password"),])
+    isTeacher = BooleanField('Teacher')
     submit = SubmitField('Create account')
 
 
@@ -204,19 +207,25 @@ def welcome():
             else:
                 flash('Something went wrong')
         else:
-            flash('Somethign went wrong')
+            flash('Something went wrong')
 
     return render_template('welcome.html', form=form)
 
 
-@app.route('/register')
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
 
     if request.method == 'POST' and form.validate():
-        user = User()
-
-        return redirect(url_for('dashboard'))
+        print("post request entered reg")
+        user = User(username = form.username.data, firstName = form.firstName.data, lastName = form.lastName.data, email = form.email.data, isTeacher = form.isTeacher.data, dateJoined = datetime.today())
+        user.password = form.password.data
+        try:
+            db.session.add(user)
+            db.session.commit()
+            return redirect(url_for('welcome'))
+        except:
+            flash("Something went wrong")
     return render_template('register.html', form = form)
 
 @app.route('/dashboard')
