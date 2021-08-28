@@ -24,9 +24,15 @@ app.config['SECRET_KEY'] = 'MySuperSecretKey'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
+# Login Stuff
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'welcome'
+
+
 # Clases camelCase
 # todo lo demas snake_case
-class User(db.Model):
+class User(db.Model, UserMixin):
     _id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255), unique=True, nullable=False)
     firstName = db.Column(db.String(255), nullable=False)
@@ -50,6 +56,16 @@ class User(db.Model):
         else:
             self.passwordHash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
+    def verify_password(self, password):
+        
+        if check_password_hash(self.passwordHash, password):
+            return True
+        elif bcrypt.checkpw(password.encode('utf-8'), self.passwordHash):
+            return True
+        
+        return False
+
+
     def __repr__(self) -> str:
         return f'Class:User<{self.username}>'
 
@@ -63,9 +79,22 @@ class User(db.Model):
 def index():
     return render_template('index.html')
     
-@app.route('/welcome')
+@app.route('/welcome', methods=['GET', 'POST'])
 def welcome():
+    username =''
+    password = ''
+
+    user = User.query.filter_by(username=username)
+
+    if user:
+        if user.verify_password(password):
+            login_user(user)
+            flash(f'Welcome Back {user.firstName}')
+
+
     return render_template('welcome.html')
+
+
 
 
 # Custom Error Pages
