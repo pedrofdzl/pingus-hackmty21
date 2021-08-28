@@ -10,7 +10,8 @@ from flask_migrate import Migrate
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField
 from wtforms import validators
-from wtforms.validators import DataRequired
+from wtforms.fields.core import BooleanField
+from wtforms.validators import DataRequired, EqualTo
 
 
 from sqlalchemy.orm import backref
@@ -164,9 +165,12 @@ class LoginForm(FlaskForm):
 
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(),])
-    fullName = StringField('Full name', validators=[DataRequired(),])
+    firstName = StringField('First name', validators=[DataRequired(),])
+    lastName = StringField('Last name', validators=[DataRequired(),])
     email = StringField('Email', validators=[DataRequired(),])
     password = PasswordField('Password', validators=[DataRequired(),])
+    confirmPassword = PasswordField('Confirm Password', validators=[EqualTo("password"),])
+    isTeacher = BooleanField('Teacher', validators=[DataRequired(),])
     submit = SubmitField('Create account')
 
 
@@ -194,14 +198,18 @@ def welcome():
                 return redirect(url_for('dashboard'))
     return render_template('welcome.html', form = form)
 
-@app.route('/register')
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
 
     if request.method == 'POST' and form.validate():
-        user = User()
+        user = User(username = form.username.data, firstName = form.firstName.data, lastName = form.lastName.data, email = form.email.data, isTeacher = form.isTeacher.data)
+        user.password = form.password.data
 
-        return redirect(url_for('dashboard'))
+        db.session.add(user)
+        db.session.commit()
+
+        return redirect(url_for('welcome'))
     return render_template('register.html', form = form)
 
 @app.route('/dashboard')

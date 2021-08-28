@@ -14,22 +14,22 @@
 
 
       <div class="col-md-10 mx-auto col-lg-5">
-        <form class="p-4 p-md-5 border rounded-3 bg-light">
+        <form class="p-4 p-md-5 border rounded-3 bg-light", method="POST">
           
             {{ form.hidden_tag() }}
 
           <div class="form-floating mb-3">
-            {{ form.username(class="form-control", id="floatingInput", placeholder="name@example.com") }}
+            {{ form.username(class="form-control", id="floatingInput", placeholder="username") }}
             <!-- <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com"> -->
             {{ form.username.label() }}
             <!-- <label for="floatingInput">Email address</label> -->
           </div>
           
           <div class="form-floating mb-3">
-            
-            <!-- {{ form.password(class()) }} -->
-            <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
-            <label for="floatingPassword">Password</label>
+            {{ form.password(class="form-control", id="floatingInput", placeholder="password") }}
+            <!-- <input type="password" class="form-control" id="floatingPassword" placeholder="Password"> -->
+            {{ form.password.label() }}
+            <!-- <label for="floatingPassword">Password</label> -->
           </div>
           <div class="checkbox mb-3">
             <label>
