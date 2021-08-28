@@ -5,6 +5,8 @@ from flask import Flask, render_template, redirect, flash, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
+
+
 # Log In
 from flask_login import (
                         UserMixin, login_manager, login_user, LoginManager,
@@ -84,6 +86,7 @@ def index():
         return redirect(url_for("dashboard"))
     else:
         return redirect(url_for("welcome"))
+
     
 @app.route('/welcome', methods=['GET', 'POST'])
 def welcome():

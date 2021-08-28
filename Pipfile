@@ -9,6 +9,7 @@ flask-sqlalchemy = "*"
 flask-migrate = "*"
 flask-login = "*"
 bcrypt = "*"
+flask-wtf = "*"
 
 [dev-packages]
 
