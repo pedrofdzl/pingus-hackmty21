@@ -208,7 +208,6 @@ def register():
     form = RegisterForm()
 
     if request.method == 'POST' and form.validate():
-        print("post request entered reg")
         user = User(username = form.username.data, firstName = form.firstName.data, lastName = form.lastName.data, email = form.email.data, isTeacher = form.isTeacher.data, dateJoined = datetime.today())
         user.password = form.password.data
         try:
