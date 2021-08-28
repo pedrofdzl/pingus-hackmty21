@@ -157,11 +157,17 @@ class Quiz(db.Model):
 ###############
 ### Forms ####
 #############
-
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(),])
     password = PasswordField('Password', validators=[DataRequired(),])
     submit = SubmitField('Log In!')
+
+class RegisterForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(),])
+    fullName = StringField('Full name', validators=[DataRequired(),])
+    email = StringField('Email', validators=[DataRequired(),])
+    password = PasswordField('Password', validators=[DataRequired(),])
+    submit = SubmitField('Create account')
 
 
 ###################
@@ -173,7 +179,7 @@ def index():
         return redirect(url_for("dashboard"))
     else:
         return redirect(url_for("welcome"))
-        
+
 @app.route('/welcome', methods=['GET', 'POST'])
 def welcome():
     form = LoginForm()
@@ -186,28 +192,17 @@ def welcome():
                 login_user(user)
                 flash(f'Welcome back {user.firstName}!')
                 return redirect(url_for('dashboard'))
-
-###################
-#### All routes ##
-##################
-@app.route('/')
-def index():
-    if(current_user.is_authenticated):
-        return redirect(url_for("dashboard"))
-    else:
-        return redirect(url_for("welcome"))
-
-    
-@app.route('/welcome', methods=['GET', 'POST'])
-def welcome():
-    # username =''
-    # password = ''
-    # user = User.query.filter_by(username=username)
-    return render_template('welcome.html', form=form)
+    return render_template('welcome.html', form = form)
 
 @app.route('/register')
 def register():
-    return render_template('register.html')
+    form = RegisterForm()
+
+    if request.method == 'POST' and form.validate():
+        user = User()
+
+        return redirect(url_for('dashboard'))
+    return render_template('register.html', form = form)
 
 @app.route('/dashboard')
 @login_required
