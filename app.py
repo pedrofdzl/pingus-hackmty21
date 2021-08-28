@@ -24,15 +24,6 @@ app.config['SECRET_KEY'] = 'MySuperSecretKey'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-    
-@app.route('/welcome')
-def welcome():
-    return render_template('welcome.html')
-
-
 # Clases camelCase
 # todo lo demas snake_case
 class User(db.Model):
@@ -65,7 +56,16 @@ class User(db.Model):
     def __str__(self) -> str:
         return self.username
 
-
+###################
+#### All routes ##
+##################
+@app.route('/')
+def index():
+    return render_template('index.html')
+    
+@app.route('/welcome')
+def welcome():
+    return render_template('welcome.html')
 
 
 # Custom Error Pages
