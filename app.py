@@ -58,20 +58,11 @@ class User(db.Model, UserMixin):
 
     @password.setter
     def password(self, password):
-        engine = randint(0,1)
-        if engine == 0:
-            self.passwordHash = generate_password_hash(password)
-        else:
-            self.passwordHash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        self.passwordHash = generate_password_hash(password)
 
-    def verify_password(self, password):
-        
-        if check_password_hash(self.passwordHash, password.encode('utf-8')):
-            return True
-        elif bcrypt.checkpw(password.encode('utf-8'), self.passwordHash):
-            return True
-        
-        return False
+
+    def verify_password(self, password):        
+        return check_password_hash(self.passwordHash, password)
 
     def get_id(self):
         return self._id
@@ -177,7 +168,7 @@ class RegisterForm(FlaskForm):
 
 class QuizForm(FlaskForm):
     name = StringField('Quiz Name', validators=[DataRequired(),])
-    description = StringField('Description', validators=[DataRequired])
+    description = StringField('Description', validators=[DataRequired(),])
     date = DateTimeField('date')
 
 ###################
