@@ -1,4 +1,3 @@
-from enum import unique
 from flask import Flask, render_template, redirect, flash, url_for, request
 from datetime import datetime
 
@@ -8,8 +7,7 @@ from flask_migrate import Migrate
 
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField
-from wtforms import validators
+from wtforms import StringField, SubmitField, PasswordField, DateTimeField
 from wtforms.validators import DataRequired
 
 
@@ -173,6 +171,11 @@ class RegisterForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(),])
     submit = SubmitField('Create account')
 
+
+class QuizForm(FlaskForm):
+    name = StringField('Quiz Name', validators=[DataRequired(),])
+    description = StringField('Description', validators=[DataRequired])
+    date = DateTimeField('date')
 
 ###################
 #### All routes ##
