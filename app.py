@@ -80,24 +80,8 @@ login_manager.login_view = 'welcome'
 def load_user(user):
     return User.query.get(user)
 
-###################
-#### All routes ##
-##################
-@app.route('/')
-def index():
-    if(current_user.is_authenticated):
-        return redirect(url_for("dashboard"))
-    else:
-        return redirect(url_for("welcome"))
-
-    
-@app.route('/welcome', methods=['GET', 'POST'])
-def welcome():
-    # username =''
-    # password = ''
-
-<<<<<<< HEAD
 # Clases camelCase
+# todo lo demas snake_case
 class Class(db.Model):
     __tablename__ = 'parent' 
     id = db.Column(db.Integer, nullable=False, primary_key=True)
@@ -161,8 +145,21 @@ class Question(db.Model):
 
 '''
 
-# todo lo demas snake_case
-=======
+###################
+#### All routes ##
+##################
+@app.route('/')
+def index():
+    if(current_user.is_authenticated):
+        return redirect(url_for("dashboard"))
+    else:
+        return redirect(url_for("welcome"))
+
+    
+@app.route('/welcome', methods=['GET', 'POST'])
+def welcome():
+    # username =''
+    # password = ''
     # user = User.query.filter_by(username=username)
 
     # if user:
@@ -179,7 +176,6 @@ def register():
 @login_required
 def dashboard():
     return render_template('dashboard.html')
->>>>>>> 44909218d39f77818ca22a1fae60f5c1b4c0b12e
 
 @app.route('/grades')
 @login_required
