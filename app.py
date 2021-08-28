@@ -15,6 +15,15 @@ app.config['SECRET_KEY'] = 'MySuperSecretKey'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+# Log In
+from flask_login import (
+                        UserMixin, login_manager, login_user, LoginManager,
+                        login_required, logout_user, current_user,
+)
 
 # Clases camelCase
 class Class(db.Model):
@@ -27,6 +36,20 @@ class Class(db.Model):
     projects = db.relationship('Project', backref='Project', lazy=True)
 
 # todo lo demas snake_case
+
+
+
+
+# Custom Error Pages
+@app.errorhandler(404)
+def error_404_handler(e):
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def error_500_handler(e):
+    return render_template('500.html'), 500
+
 
 if __name__ == '__main__':
     app.run(debug=True)
