@@ -76,6 +76,9 @@ class User(db.Model, UserMixin):
         
         return False
 
+    def get_id(self):
+        return self._id
+
 
     def __repr__(self) -> str:
         return f'Class:User<{self.username}>'
@@ -87,10 +90,11 @@ class User(db.Model, UserMixin):
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'welcome'
+login_manager.login_message = 'Please Login to access'
 
 @login_manager.user_loader
-def load_user(user):
-    return User.query.get(user)
+def load_user(id):
+    return User.query.get(int(id))
 
 class Class(db.Model):
     __tablename__ = 'parent' 
@@ -187,16 +191,24 @@ def index():
 @app.route('/welcome', methods=['GET', 'POST'])
 def welcome():
     form = LoginForm()
+    # print('hello')
 
     if request.method == 'POST' and form.validate():
         user = User.query.filter_by(username=form.username.data).first()
+        # print('found')
         
         if user:
             if user.verify_password(form.password.data):
                 login_user(user)
                 flash(f'Welcome back {user.firstName}!')
                 return redirect(url_for('dashboard'))
-    return render_template('welcome.html', form = form)
+            else:
+                flash('Something went wrong')
+        else:
+            flash('Somethign went wrong')
+
+    return render_template('welcome.html', form=form)
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -232,6 +244,14 @@ def classes():
 def profile():
     return render_template('profile.html')
 
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You\'ve logout')
+
+    return redirect(url_for('index'))
 
 
 # Custom Error Pages
