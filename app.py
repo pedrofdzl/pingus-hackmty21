@@ -24,12 +24,6 @@ app.config['SECRET_KEY'] = 'MySuperSecretKey'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-# Login Stuff
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'welcome'
-
-
 # Clases camelCase
 # todo lo demas snake_case
 class User(db.Model, UserMixin):
@@ -72,29 +66,36 @@ class User(db.Model, UserMixin):
     def __str__(self) -> str:
         return self.username
 
+# Login Stuff
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'welcome'
+
+@login_manager.user_loader
+def load_user(user):
+    return User.query.get(user)
+
 ###################
 #### All routes ##
 ##################
 @app.route('/')
 def index():
-    if(current_user.is_active):
+    if(current_user.is_authenticated):
         return redirect(url_for("dashboard"))
     else:
         return redirect(url_for("welcome"))
     
 @app.route('/welcome', methods=['GET', 'POST'])
 def welcome():
-    username =''
-    password = ''
+    # username =''
+    # password = ''
 
-    user = User.query.filter_by(username=username)
+    # user = User.query.filter_by(username=username)
 
-    if user:
-        if user.verify_password(password):
-            login_user(user)
-            flash(f'Welcome Back {user.firstName}')
-
-
+    # if user:
+    #     if user.verify_password(password):
+    #         login_user(user)
+    #         flash(f'Welcome Back {user.firstName}')
     return render_template('welcome.html')
 
 @app.route('/register')
