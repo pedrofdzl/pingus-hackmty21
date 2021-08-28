@@ -26,14 +26,14 @@ from flask_login import (
 
 
 # Custom Error Pages
-@app.errorhandler(404):
+@app.errorhandler(404)
 def error_404_handler(e):
-    return render_template('404.html')
+    return render_template('404.html'), 404
 
 
-@app.errorhandler(500):
+@app.errorhandler(500)
 def error_500_handler(e):
-    return render_template('500.html')
+    return render_template('500.html'), 500
 
 
 if __name__ == '__main__':
