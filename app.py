@@ -41,6 +41,8 @@ class User(db.Model, UserMixin):
     score = db.Column(db.Integer, default=0)
     isTeacher = db.Column(db.Boolean, default=False)
     dateJoined = db.Column(db.DateTime)
+    blogPost_id = db.Column(db.Integer, db.ForeignKey('blogpost.id'))
+    notification_id = db.Column(db.Integer, db.ForeignKey('notification.id'))
 
     @property
     def password(self):
@@ -80,6 +82,99 @@ login_manager.login_view = 'welcome'
 def load_user(user):
     return User.query.get(user)
 
+# Clases camelCase
+class Class(db.Model):
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    quizes = db.relationship('Quiz', backref='clase')
+    assignments = db.relationship('Assignment', backref='clase')
+    forum = db.relationship('Forum', backref='clase')
+    lectures = db.relationship('Lecture', backref='clase')
+
+    def __repr__(self):
+        return 'Class ' + str(self.id) 
+
+class Quiz(db.Model):
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.today)
+    questions = db.relationship('Question', backref='quizz')
+    class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
+
+    def __repr__(self):
+        return 'Quiz ' + str(self.id) 
+
+class Assignment(db.Model):
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    datePublished = db.Column(db.DateTime, nullable=False, default=datetime.today)
+    dateDue = db.Column(db.DateTime, nullable=False, default=datetime.today)
+    class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
+
+    def __repr__(self):
+        return 'Activity ' + str(self.id) 
+
+class Lecture(db.Model):
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.today)
+    class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
+
+    def __repr__(self):
+        return 'Lecture ' + str(self.id) 
+
+class Forum(db.Model):
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    blogPosts = db.relationship('BlogPost', backref='foro')
+    class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
+
+    def __repr__(self):
+        return 'Forum ' + str(self.id) 
+
+class BlogPost(db.Model):
+    __tablename__ = 'blogpost'
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    title = db.Column(db.String(255))
+    content = db.Column(db.Text, nullable=False)
+    user = db.relationship('User', backref='blog')
+    date = db.Column(db.DateTime, nullable=False, default=datetime.today)
+    forum_id = db.Column(db.Integer, db.ForeignKey('forum.id'))
+
+    def __repr__(self):
+        return 'BlogPost ' + str(self.id) 
+
+class Question(db.Model):
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    content = db.Column(db.String(255), nullable=False)
+    weight = db.Column(db.Float, nullable=False)
+    answers = db.relationship('Answer', backref='question')
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quiz.id'))
+
+    def __repr__(self):
+        return 'Question ' + str(self.id) 
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.today)
+    subject = db.Column(db.String(255), nullable=False)
+    receivers = db.relationship('User', backref='notificacion')
+
+    def __repr__(self):
+        return 'Notification ' + str(self.id) 
+
+class Answer(db.Model):
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
+
+    def __repr__(self):
+        return 'Answer ' + str(self.id) 
+
 ###################
 #### All routes ##
 ##################
@@ -89,80 +184,11 @@ def index():
         return redirect(url_for("dashboard"))
     else:
         return redirect(url_for("welcome"))
-
-    
+# todo lo demas snake_case
 @app.route('/welcome', methods=['GET', 'POST'])
 def welcome():
     # username =''
     # password = ''
-
-<<<<<<< HEAD
-# Clases camelCase
-class Class(db.Model):
-    __tablename__ = 'parent' 
-    id = db.Column(db.Integer, nullable=False, primary_key=True)
-    name = db.Column(db.Text, nullable=False)
-    quizes = db.relationship('Quiz', backref='Quiz', lazy=True)
-    #activities = db.relationship('Activity', backref='Activity', lazy=True)
-    #forum = db.relationship('Forum', backref=backref('Forum', uselist='False'))
-    #lectures = db.relationship('Lecture', backref='Lecture', lazy=True)
-    #projects = db.relationship('Project', backref='Project', lazy=True)
-
-    def __repr__(self):
-        return 'Class ' + str(self.id) 
-
-class Quiz(db.Model):
-    __tablename__ = 'child'
-    id = db.Column(db.Integer, nullable=False, primary_key=True)
-    name = db.Column(db.Text, nullable=False)
-    description = db.Column(db.Text, nullable=False)
-    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    #questions = db.relationship('Question', back_populates='Question', lazy=True)
-    parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'))
-
-    def __repr__(self):
-        return 'Quiz ' + str(self.id) 
-'''
-class Activity(db.Model):
-    __tablename__ = 'child'
-    id = db.Column(db.Integer, nullable=False, primary_key=True)
-    name = db.Column(db.Text, nullable=False)
-    description = db.Column(db.Text, nullable=False)
-    datePublished = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    dateDue = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'))
-
-    def __repr__(self):
-        return 'Activity ' + str(self.id) 
-
-class Lecture(db.Model):
-    __tablename__ = 'child'
-    id = db.Column(db.Integer, nullable=False, primary_key=True)
-    name = db.Column(db.Text, nullable=False)
-    content = db.Column(db.Text, nullable=False)
-    date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'))
-
-    def __repr__(self):
-        return 'Lecture ' + str(self.id) 
-'''
-
-'''
-class Question(db.Model):
-    __tablename__ = 'child'
-    id = db.Column(db.Integer, nullable=False, primary_key=True)
-    content = db.Column(db.Text, nullable=False)
-    weight = db.Column(db.Float, nullable=False)
-    answers = db.Column(MutableList.as_mutable(db.PickleType), default=[])
-    parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'))
-
-    def __repr__(self):
-        return 'Question ' + str(self.id) 
-
-'''
-
-# todo lo demas snake_case
-=======
     # user = User.query.filter_by(username=username)
 
     # if user:
@@ -179,7 +205,6 @@ def register():
 @login_required
 def dashboard():
     return render_template('dashboard.html')
->>>>>>> 44909218d39f77818ca22a1fae60f5c1b4c0b12e
 
 @app.route('/grades')
 @login_required
