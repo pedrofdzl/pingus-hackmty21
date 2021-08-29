@@ -479,8 +479,13 @@ def class_add(classid, studid):
     clase = Class.query.get_or_404(classid)
     user = User.query.get_or_404(studid)
 
-    clase.users.append(user)
-    db.session.commit()
+    try:
+        clase.users.append(user)
+        db.session.commit()
+        flash('Student Added Succesfully')
+    except:
+        db.session.rollback()
+        flash('Student Already added!')
 
     return redirect(url_for('class_students', id=clase.id))
     
@@ -490,8 +495,13 @@ def class_remove(classid, studid):
     clase = Class.query.get_or_404(classid, studid)
     user = User.query.get_or_404(studid)
 
-    clase.users.remove(user)
-    db.session.commit()
+    try:
+        clase.users.remove(user)
+        db.session.commit()
+        flash('Student Remove succesfully')
+    except:
+        db.session.rollback()
+        flash('Student not in class')
 
     return redirect(url_for('class_students', id=clase.id))
 

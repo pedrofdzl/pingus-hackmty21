@@ -105,17 +105,12 @@
         <hr>
         {% if not clase.forum.blogPosts[0] %}
                 <h4>Looks like the forum is empty &#128546</h4>
-                <a href="{{url_for('blogPost_create', classid=clase.id)}}">Add Blog Post</h3>
+
             {% else %}
                 {% for post in clase.forum.blogPosts %}
                     <h3>{{post.title}}</h3>
-<<<<<<< HEAD
                     <small>Created by: {{post.user.firstName}} {{post.user.lastName}}</small>
                     <small>Date: {{post.date}}</small>
-=======
-                    <small>Created by: {{post.user[0].firstName}} {{post.user[0].lastName}}</small>
-                    <small class="float-end">Date: {{post.date}}</small>
->>>>>>> 76d472d0f306a6a40b5de72825b268d2a8b69fc9
                     <p>{{post.content}}</p>
                 {% endfor %}
             {% endif %}
