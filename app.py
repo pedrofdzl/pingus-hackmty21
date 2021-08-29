@@ -63,6 +63,7 @@ class User(db.Model, UserMixin):
     dateJoined = db.Column(db.DateTime)
     blogPosts = db.relationship('BlogPost', backref='owner_user', overlaps="blogPosts,owner_user")
     submissions = db.relationship('Submission', backref='owner_user', uselist=True)
+    assignments = db.relationship('Assignment', backref='owner_user', uselist=True)
     notification_id = db.Column(db.Integer, db.ForeignKey('notification.id'))
 
     @property
@@ -125,6 +126,8 @@ class Assignment(db.Model):
     dateDue = db.Column(db.DateTime, nullable=False, default=datetime.today)
     submissions = db.relationship('Submission', backref='owner_assignment', uselist=True)
     class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    submited = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return 'Activity ' + str(self.id) 
@@ -356,7 +359,9 @@ def user_update(id):
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html')
+    assignments = current_user.assignments
+    submissions = current_user.submissions
+    return render_template('dashboard.html', assignments=assignments, submissions=submissions)
 
 @app.route('/grades')
 @login_required
@@ -366,8 +371,19 @@ def grades():
     if not current_user.isTeacher:
         submissions = Submission.query.filter_by(user_id=current_user.id).all()
 
+    sum = 0
+    c = 0
+    if submissions:
+        for submission in submissions:
+            sum += submission.grade
+            c += 1
+        if(c > 0):
+            gpa = sum / c
+    else:
+        gpa = 0
+    
 
-    return render_template('grades.html', assignments=submissions)
+    return render_template('grades.html', gpa=gpa)
     
 @app.route('/classes', methods=['GET', 'POST'])
 @login_required
@@ -614,6 +630,11 @@ def assignment_create(classid):
     # print(form.dueDate.data)
     if request.method == 'POST' and form.validate():
         assignment = Assignment(name=form.name.data, description=form.description.data, dateDue=form.dateDue.data)
+        students = User.query.filter_by(isTeacher = False).all()
+        for student in students:
+            for c in student.classes:
+                if(c == clase):
+                    student.assignments.append(assignment)
         assignment.class_id = clase.id
 
         try:
@@ -693,6 +714,7 @@ def submission_upload(classid, assid):
         submission = Submission(content=form.content.data)
         submission.user_id = current_user.id
         submission.assignment_id = assignment.id
+        assignment.submited = True
 
         try:
             db.session.add(submission)

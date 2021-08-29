@@ -18,5 +18,56 @@
     <h1 class="display-5 fw-bold lh-1 mb-3">Welcome back, {{ current_user.firstName }} {{ current_user.lastName }}</h1>
 
 </div>
+{% if current_user.isTeacher == True %}
+<div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
+    <h2>Assignments to grade</h2>
+    <hr>
+    <div class="list-group">
+        {% for as in assignments %}
+        <a href="{{url_for('classes')}}"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{as.name}}</h5>
+            </div>
+            <small class="mb-1">Due: {{as.dateDue}}</small>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
+    <h2>Upcoming assignments</h2>
+    <hr>
+    <div class="list-group">
+        {% for as in assignments %}
+        <a href="{{url_for('classes')}}"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{as.name}}</h5>
+            </div>
+            <small class="mb-1">Due: {{as.dateDue}}</small>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
+    <h2>Last grades</h2>
+    <hr>
+    <div class="list-group">
+        {% for sub in submissions %}
+        {% if sub.submited == False %}
+        <a href="{{url_for('classes')}}"
+            class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">Your answer: {{sub.content}}</h5>
+            </div>
+            <small class="mb-1">Grade: {{sub.grade}}</small>
+        </a>
+        {% endif %}
+        {% endfor %}
+    </div>
+{% endif %}
+</div>
 
 {% endblock %}
