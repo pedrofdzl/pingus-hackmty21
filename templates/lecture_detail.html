@@ -7,25 +7,30 @@
 
 {% block body %}
 
-{% for message in get_flashed_messages() %}
-<div class="alert alert-warning alert-dismissible fade show" role="alert">
-    <strong>{{ message }}</strong>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-{% endfor %}
-    <h1>Lecture: {{ lecture.name }}</h1>
-    <hr>
-
-    <p>{{ lecture.content }}</p>
 
 
-    <span>
+    <!-- <span>
         <a href="{{url_for('lecture_update', classid=clase.id, lectid=lecture.id)}}">Edit Lecture</a>
         <a href="{{url_for('lecture_delete', classid=clase.id, lectid=lecture.id)}}">Delete Lecture</a>
-    </span>
+    </span> -->
 
-
-
+    <div class="container col-xl-10 col-xxl-8 px-4 py-5">
+        <h2 class="display-4 fw-bold lh-1 mb-3 text-center">Lecture: {{ lecture.name }}</h1>
+            <hr>
+            <div class="col-md-10 mx-auto col-lg-8">
+                {% for message in get_flashed_messages() %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>{{ message }}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                <p>{{ lecture.content }}</p>
+                {% if current_user.isTeacher %}
+                <a class="btn btn-primary" href="{{url_for('lecture_update', classid=clase.id, lectid=lecture.id)}}">Edit lecture</a>
+                <a class="btn btn-danger" href="{{url_for('lecture_delete', classid=clase.id, lectid=lecture.id)}}">Delete lecture</a>
+                {% endif %}
+            </div>
+    </div>
 
 
 {% endblock %}

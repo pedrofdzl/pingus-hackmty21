@@ -7,22 +7,26 @@
 
 
 {% block body %}
-{% for message in get_flashed_messages() %}
-<div class="alert alert-warning alert-dismissible fade show" role="alert">
-    <strong>{{ message }}</strong>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
 
-{% endfor %}
-    <h1>Assignment: {{ assignment.name }}</h1>
-    <hr>
-
-    <p>{{ assignment.description }}</p>
-
-    <span>
-        <a href="{{url_for('assignment_update', classid=clase.id, assid=assignment.id)}}">Edit Lecture</a>
-        <a href="{{url_for('assignment_delete', classid=clase.id, assid=assignment.id)}}">Delete Lecture</a>
-    </span>
-
+    <div class="container col-xl-10 col-xxl-8 px-4 py-5">
+        <h2 class="display-4 fw-bold lh-1 mb-3 text-center">Assignment: {{ assignment.name }}</h1>
+            <hr>
+            <div class="col-md-10 mx-auto col-lg-8">
+                {% for message in get_flashed_messages() %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>{{ message }}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                <p>{{ assignment.description }}</p>
+                {% if current_user.isTeacher %}
+                <a class="btn btn-primary" href="{{url_for('assignment_update', classid=clase.id, assid=assignment.id)}}">Edit assignment</a>
+                <a class="btn btn-danger" href="{{url_for('assignment_delete', classid=clase.id, assid=assignment.id)}}">Delete assignment</a>
+                {% else %}
+                <!-- UPLOAD WORK -->
+                <a class="btn btn-success" href="{{url_for('assignment_update', classid=clase.id, assid=assignment.id)}}">Upload assignment</a>
+                {% endif %}
+            </div>
+    </div>
 
 {% endblock %}

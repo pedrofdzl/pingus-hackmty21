@@ -8,8 +8,15 @@ from flask_migrate import Migrate, current
 
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
+<<<<<<< HEAD
 from sqlalchemy.ext.declarative import declarative_base
 
+=======
+<<<<<<< HEAD
+=======
+from sqlalchemy.ext.declarative import declarative_base
+>>>>>>> 6576b99b03fcf90400d57c08c62fd0784e8e0958
+>>>>>>> 6df98eeddd7768d64151a47025b328c25286598d
 from wtforms import StringField, SubmitField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, EqualTo
 from wtforms.widgets import TextArea
@@ -39,7 +46,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # DB
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-Base = declarative_base()
 
 db.create_all()
 db.session.commit()
@@ -482,8 +488,13 @@ def class_add(classid, studid):
     clase = Class.query.get_or_404(classid)
     user = User.query.get_or_404(studid)
 
-    clase.users.append(user)
-    db.session.commit()
+    try:
+        clase.users.append(user)
+        db.session.commit()
+        flash('Student Added Succesfully')
+    except:
+        db.session.rollback()
+        flash('Student Already added!')
 
     return redirect(url_for('class_students', id=clase.id))
     
@@ -493,8 +504,13 @@ def class_remove(classid, studid):
     clase = Class.query.get_or_404(classid, studid)
     user = User.query.get_or_404(studid)
 
-    clase.users.remove(user)
-    db.session.commit()
+    try:
+        clase.users.remove(user)
+        db.session.commit()
+        flash('Student Remove succesfully')
+    except:
+        db.session.rollback()
+        flash('Student not in class')
 
     return redirect(url_for('class_students', id=clase.id))
 
