@@ -24,7 +24,13 @@
                 <a class="btn btn-danger" href="{{url_for('assignment_delete', classid=clase.id, assid=assignment.id)}}">Delete assignment</a>
                 {% else %}
                 <!-- UPLOAD WORK -->
-                <a class="btn btn-success" href="{{url_for('assignment_update', classid=clase.id, assid=assignment.id)}}">Upload assignment</a>
+                    {% if submission %}
+                    <h5>Already Submited -- <a href="{{ url_for('submission_detail', classid=clase.id, assid=assignment.id, subid=submission.id)}}">Review Submission</a></h5>
+
+                    {% else %}
+                    <a class="btn btn-success" href="{{url_for('submission_upload', classid=clase.id, assid=assignment.id)}}">Upload Submission</a>
+                    {% endif %}
+
                 {% endif %}
             </div>
     </div>
