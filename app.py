@@ -10,6 +10,7 @@ from flask_wtf import FlaskForm
 from sqlalchemy.ext.declarative import declarative_base
 from wtforms import StringField, SubmitField, PasswordField, DateTimeField, BooleanField
 from wtforms import widgets
+from wtforms.form import Form
 from wtforms.validators import DataRequired, EqualTo
 from wtforms.widgets import TextArea
 
@@ -436,6 +437,8 @@ def class_create():
     
     if request.method == 'POST' and form.validate():
         clase = Class(name=form.name.data)
+        #si hay tiempo extra, validar ultima letra
+        forum = Forum(name=f"{clase.name}'s Forum", owner_class=clase)
 
         try:
             db.session.add(clase)
@@ -476,6 +479,7 @@ def class_delete(id):
     clase = Class.query.get_or_404(id)
 
     try:
+        db.session.delete(clase.forum)
         db.session.delete(clase)
         db.session.commit()
         flash('Class Deleted Succesfully!')
@@ -613,6 +617,70 @@ def assignment_detail(classid, assid):
 @app.route('/classes/detail/<int:classid>/assignment/delete/<int:assid>')
 def assignment_delete(classid, assid):
     pass
+
+@app.route('/classes/detail/<int:classid>/forum/blogPost/create')
+def blogPost_create(classid):
+    clase = Class.query.get_or_404(classid)
+
+    form = BlogPostForm()
+
+    if request.method == 'POST' and form.validate():
+        blogPost = BlogPost(title=form.title.data, content=form.content.data, user=current_user)
+        blogPost.forum_id = clase.forum.id
+
+        try:
+            db.session.add(blogPost)
+            db.session.commit()
+            flash('Blog Post Added Succesfully')
+        except:
+            db.session.rollback()
+            flash('Hooooooly Guacamoooooleeeee... Something went wrong')
+        
+    return render_template('blogPost_create.html', form=form, clase=clase)
+
+@app.route('/classes/detail/<int:classid>/forum/blogPost/update/<int:postid>')
+def blogPost_update(classid, postid):
+    clase = Class.query.get_or_404(classid)
+    blogPost = BlogPost.query.get_or_404(postid)
+
+    form = BlogPostForm(request.form, obj=blogPost)
+
+    if request.method == 'POST' and form.validate():
+        blogPost.title = form.title.data
+        blogPost.content = form.content.data
+        
+        try:
+            db.session.commit()
+            flash('Blog Post Updated Succesfuly!')
+            return redirect('blogPost_detail', classid=clase.id, postid=blogPost.id)
+        except:
+            db.session.rollback()
+            flash('Hooooooly Guacamoooooleeeee... Something went wrong')
+        
+    return render_template('assignment_update.html')
+
+@app.route('/classes/detail/<int:classid>/forum/blogPost/delete/<int:postid>')
+def blogPost_delete(classid, postid):
+    clase = Class.query.get_or_404(classid)
+    blogPost = Lecture.query.get_or_404(postid)
+
+    try:
+        db.session.delete(blogPost)
+        db.session.commit()
+        flash('Blog Post Deleted Succesfuly!')
+        return redirect(url_for('forum_detail', classid=clase.id))
+    except:
+        db.session.rollback()
+        flash('Hooooooly Guacamoooooleeeee... Something went wrong')
+
+    return redirect(url_for('blogPost_detail', classid=clase.id, postid=blogPost.id))
+
+@app.route('/classes/detail/<int:classid>/forum/blogPost/detail/<int:postid>')
+def blogPost_detail(classid, postid):
+    clase = Class.query.get_or_404(classid)
+    blogPost = BlogPost.query.get_or_404(postid)
+
+    return render_template('blogPost_detail.html', clase=clase, blogPost=blogPost)
 
 # Custom Error Pages
 @app.errorhandler(404)

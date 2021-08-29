@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Blog Post</title>
+{% endblock %}
+
+{% block body %}
+<div class="container col-xl-10 col-xxl-8 px-4 py-5">
+    <h2 class="display-4 fw-bold lh-1 mb-3 text-center">Create New Blog Post</h1>
+        <br>
+        <div class="col-md-10 mx-auto col-lg-5">
+            {% for message in get_flashed_messages() %}
+            <p><strong>{{ message }}</strong></p><br>
+            {% endfor %}
+            <form class="p-4 p-md-5 border rounded-3 bg-light" method="POST">
+
+                    {{ form.hidden_tag() }}
+
+                <div class="form-floating mb-3">
+                    {{ form.title(class="form-control", id="floatingInput", placeholder="Title of the Blog Post") }}
+                    <!-- <input type="username" class="form-control" id="floatingInput" placeholder="username"> -->
+                    {{ form.title.label() }}
+                    <!-- <label for="floatingInput">Username</label> -->
+                    {{ form.content(class="form-control", id="floatingInput", placeholder="Title of the Blog Post") }}
+                    <!-- <input type="username" class="form-control" id="floatingInput" placeholder="username"> -->
+                    {{ form.content.label() }}
+                    <!-- <label for="floatingInput">Username</label> -->
+                </div>
+                {{ form.submit(class="w-100 btn btn-lg btn-success") }}
+                <!-- <button class="w-100 btn btn-lg btn-primary" type="submit">Create account</button> -->
+            </form>
+        </div>
+</div>
+{% endblock %}

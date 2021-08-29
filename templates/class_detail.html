@@ -38,6 +38,17 @@
         </li>
         <li>
             <h1>Forum</h1>
+            {% if not clase.forum.blogPosts[0] %}
+                <h4>Looks like the forum is empty &#128546</h4>
+                <a href="{{url_for('blogPost_create', classid=clase.id)}}">Add Blog Post</h3>
+            {% else %}
+                {% for post in clase.forum.blogPosts %}
+                <h3>{{post.title}}</h3>
+                <p>{{post.content}}</p>
+                <small>Created by: {{post.user.firstName}} {{post.user.lastName}}</small>
+                <small>Date: {{post.date}}</small>
+                {% endfor %}
+            {% endif %}
         </li>
         
     </ul>
