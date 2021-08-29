@@ -6,6 +6,22 @@
 
 {% block body %}
 <div class="mx-auto col-lg-8 px-0 my-5 text-left">
+    
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>{{ message }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+      
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+          <li class="breadcrumb-item"><a href="{{ url_for('classes') }}">Classes</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{{ clase.name }}</li>
+        </ol>
+      </nav>
+
     <h1 class="display-5 fw-bold lh-1 mb-3">{{clase.name}}</h1>
     {% for user in clase.users %}
         {% if user.isTeacher %}
@@ -90,10 +106,10 @@
                 <a href="{{url_for('blogPost_create', classid=clase.id)}}">Add Blog Post</h3>
             {% else %}
                 {% for post in clase.forum.blogPosts %}
-                <h3>{{post.title}}</h3>
-                <p>{{post.content}}</p>
-                <small>Created by: {{post.user.firstName}} {{post.user.lastName}}</small>
-                <small>Date: {{post.date}}</small>
+                    <h3>{{post.title}}</h3>
+                    <small>Created by: {{post.user[0].firstName}} {{post.user[0].lastName}}</small>
+                    <small>Date: {{post.date}}</small>
+                    <p>{{post.content}}</p>
                 {% endfor %}
             {% endif %}
     </div>

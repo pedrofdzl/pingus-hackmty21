@@ -9,9 +9,11 @@ from flask_migrate import Migrate, current
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
 from sqlalchemy.ext.declarative import declarative_base
-from wtforms import StringField, SubmitField, PasswordField, DateTimeField, BooleanField
-from wtforms import widgets
-from wtforms.form import Form
+<<<<<<< HEAD
+=======
+
+>>>>>>> b32d089672f41b8da949bdcc8188536ead06573b
+from wtforms import StringField, SubmitField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, EqualTo
 from wtforms.widgets import TextArea
 from wtforms.ext.dateutil.fields import DateTimeField
@@ -65,6 +67,7 @@ class User(db.Model, UserMixin):
     isTeacher = db.Column(db.Boolean, default=False)
     dateJoined = db.Column(db.DateTime)
     blogPost_id = db.Column(db.Integer, db.ForeignKey('blogpost.id'))
+    blogPosts = db.relationship('BlogPost', backref='owner_user', uselist=True)
     notification_id = db.Column(db.Integer, db.ForeignKey('notification.id'))
 
     @property
@@ -155,8 +158,8 @@ class BlogPost(db.Model):
     id = db.Column(db.Integer, nullable=False, primary_key=True)
     title = db.Column(db.String(255))
     content = db.Column(db.Text, nullable=False)
-    user = db.relationship('User', backref='owner_blogpost')
     date = db.Column(db.DateTime, nullable=False, default=datetime.today)
+    user = db.relationship('User', backref='owner_BlogPost')
     forum_id = db.Column(db.Integer, db.ForeignKey('forum.id'))
 
     def __repr__(self):
@@ -305,6 +308,7 @@ def user_create():
         try:
             db.session.add(user)
             db.session.commit()
+            flash('User Register')
             return redirect(url_for('welcome'))
         except:
             flash("Something went wrong")
@@ -575,20 +579,22 @@ def assignment_delete(classid, assid):
     
     return redirect(url_for('assignment_detail', classid=clase.id, assid=assignment.id))
 
-@app.route('/classes/detail/<int:classid>/forum/blogPost/create')
+@app.route('/classes/detail/<int:classid>/forum/blogPost/create', methods=['GET','POST'])
 def blogPost_create(classid):
     clase = Class.query.get_or_404(classid)
 
     form = BlogPostForm()
 
     if request.method == 'POST' and form.validate():
-        blogPost = BlogPost(title=form.title.data, content=form.content.data, user=current_user)
+        blogPost = BlogPost(title=form.title.data, content=form.content.data)
         blogPost.forum_id = clase.forum.id
+        current_user.blogPosts.append(blogPost)
 
         try:
             db.session.add(blogPost)
             db.session.commit()
             flash('Blog Post Added Succesfully')
+            return redirect(url_for('class_detail', id=clase.id))
         except:
             db.session.rollback()
             flash('Hooooooly Guacamoooooleeeee... Something went wrong')

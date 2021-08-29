@@ -10,7 +10,10 @@
         <br>
         <div class="col-md-10 mx-auto col-lg-5">
             {% for message in get_flashed_messages() %}
-            <p><strong>{{ message }}</strong></p><br>
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>{{ message }}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
             {% endfor %}
             <form class="p-4 p-md-5 border rounded-3 bg-light" method="POST">
 
@@ -20,6 +23,8 @@
                     {{ form.title(class="form-control", id="floatingInput", placeholder="Title of the Blog Post") }}
                     <!-- <input type="username" class="form-control" id="floatingInput" placeholder="username"> -->
                     {{ form.title.label() }}
+                </div>
+                <div class="form-floating mb-3">
                     <!-- <label for="floatingInput">Username</label> -->
                     {{ form.content(class="form-control", id="floatingInput", placeholder="Title of the Blog Post") }}
                     <!-- <input type="username" class="form-control" id="floatingInput" placeholder="username"> -->
