@@ -10,11 +10,10 @@
     {% endfor %}
     
     {% if current_user.isTeacher %}
-        {% for class in users.query.filter_by(current_user.id) %}
-            <h>Hola</h>
+        {% for class in lista %}
             <ul>
                 <li>
-                    {{class.name}}
+                    <a href="{{url_for('class_detail', id=class.id)}}">{{class.name}}</a>
                 </li>
             </ul>
         {% endfor %}

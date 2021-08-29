@@ -390,7 +390,8 @@ def grades():
 @app.route('/classes')
 @login_required
 def classes():
-    return render_template('classes.html')
+    class_list = current_user.classes
+    return render_template('classes.html', lista=class_list)
     
 @app.route('/profile')
 @login_required
