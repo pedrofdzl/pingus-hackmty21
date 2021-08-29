@@ -1,3 +1,4 @@
+from typing import Text
 from flask import Flask, render_template, redirect, flash, url_for, request
 from datetime import datetime
 
@@ -8,11 +9,11 @@ from flask_migrate import Migrate, current
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
 from sqlalchemy.ext.declarative import declarative_base
-from wtforms import StringField, SubmitField, PasswordField, DateTimeField, BooleanField
+from wtforms import StringField, SubmitField, PasswordField, BooleanField
 from wtforms import widgets
 from wtforms.validators import DataRequired, EqualTo
 from wtforms.widgets import TextArea
-
+from wtforms.ext.dateutil.fields import DateTimeField
 
 from sqlalchemy.orm import backref
 from sqlalchemy.ext.mutable import MutableList
@@ -234,10 +235,11 @@ class AnswerForm(FlaskForm):
     content = StringField('Content', validators=[DataRequired(),], widgets=TextArea())
     submit = SubmitField('Submit')
 
+
 class AssignmentForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(),])
-    description = StringField('Description', validators=[DataRequired(),])
-    dueDate = DateTimeField('Due Date', validators=[DataRequired(),])
+    description = StringField('Description', validators=[DataRequired(),], widget=TextArea())
+    dateDue = DateTimeField('Due Date', validators=[DataRequired(),],)
     submit = SubmitField('Submit')
     
 
@@ -250,6 +252,7 @@ class LectureForm(FlaskForm):
 class ForumForm(FlaskForm):
     name = StringField('name', validators=[DataRequired(),])
     submit = SubmitField('Submit')
+
 
 class BlogPostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(),])
@@ -497,20 +500,23 @@ def lecture_detail(classid, lectid):
     return render_template('lecture_detail.html', clase=clase, lecture=lecture)
 
 
-@app.route('/classes/detail/<int:classid>/assignment/create')
+@app.route('/classes/detail/<int:classid>/assignment/create', methods=['GET', 'POST'])
 def assignment_create(classid):
     clase = Class.query.get_or_404(classid)
 
     form = AssignmentForm()
 
+    # print(form.dueDate.data)
     if request.method == 'POST' and form.validate():
-        assignment = Assignment(name=form.name.data, description=form.description.data, dueDate=form.dueDate.data)
+        print('hello')
+        assignment = Assignment(name=form.name.data, description=form.description.data, dateDue=form.dateDue.data)
         assignment.class_id = clase.id
 
         try:
             db.session.add(assignment)
             db.session.commit()
             flash('Assignment added succesfully')
+            return redirect(url_for('assignment_detail', classid=clase.id, assid=assignment.id))
         except:
             db.session.rollback()
             flash('Hooooooly Guacamoooooleeeee... Something went wrong')
@@ -518,7 +524,7 @@ def assignment_create(classid):
     return render_template('assignment_create.html', form=form, clase=clase)
 
 
-@app.route('/classes/detail/<int:classid>/assignment/update/<int:assid>')
+@app.route('/classes/detail/<int:classid>/assignment/update/<int:assid>', methods=['GET', 'POST'])
 def assignment_update(classid, assid):
     clase = Class.query.get_or_404(classid)
     assignment = Assignment.query.get_or_404(assid)
@@ -528,29 +534,41 @@ def assignment_update(classid, assid):
     if request.method == 'POST' and form.validate():
         assignment.name = form.name.data
         assignment.description = form.name.data
-        assignment.dueDate = form.dueDate.data
+        assignment.dateDue = form.dateDue.data
         
         try:
             db.session.commit()
             flash('Assignment Updated Succesfuly!')
-            return redirect('assignment_detail', classid=clase.id, assid=assignment.id)
+            return redirect(url_for('assignment_detail', classid=clase.id, assid=assignment.id))
         except:
             db.session.rollback()
             flash('Hooooooly Guacamoooooleeeee... Something went wrong')
         
-    return render_template('assignment_update.html')
+    return render_template('assignment_update.html', form=form, clase=clase, assignment=assignment)
 
 @app.route('/classes/detail/<int:classid>/assignment/detail/<int:assid>')
 def assignment_detail(classid, assid):
     clase = Class.query.get_or_404(classid)
     assignment = Assignment.query.get_or_404(assid)
 
-    return render_template('assinment_detail.html', clase=clase, assignment=assignment)
+    return render_template('assignment_detail.html', clase=clase, assignment=assignment)
 
 
 @app.route('/classes/detail/<int:classid>/assignment/delete/<int:assid>')
 def assignment_delete(classid, assid):
-    pass
+    clase = Class.query.get_or_404(classid)
+    assignment = Assignment.query.get_or_404(assid)
+
+    try:
+        db.session.delete(assignment)
+        db.session.commit()
+        flash('Assignment deleted Succesfully!')
+        return redirect(url_for('class_detail', id=clase.id))
+    except:
+        db.session.rollback()
+        flash('Hooooooly Guacamoooooleeeee... Something went wrong')
+    
+    return redirect(url_for('assignment_detail', classid=clase.id, assid=assignment.id))
 
 # Custom Error Pages
 @app.errorhandler(404)
