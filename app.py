@@ -101,7 +101,7 @@ class Class(db.Model):
     name = db.Column(db.String(255), nullable=False)
     quizes = db.relationship('Quiz', backref='owner_class')
     assignments = db.relationship('Assignment', backref='owner_class')
-    forum = db.relationship('Forum', backref='owner_class')
+    forum = db.relationship('Forum', backref='owner_class', uselist=False)
     lectures = db.relationship('Lecture', backref='owner_class')
 
     def __repr__(self):
@@ -140,6 +140,7 @@ class Lecture(db.Model):
         return 'Lecture ' + str(self.id) 
 
 class Forum(db.Model):
+    __tablename__ = 'forum'
     id = db.Column(db.Integer, nullable=False, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     blogPosts = db.relationship('BlogPost', backref='owner_forum')
