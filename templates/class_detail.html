@@ -10,7 +10,10 @@
         <br>
         <div class="col-md-10 mx-auto col-lg-5">
             {% for message in get_flashed_messages() %}
-            <p><strong>{{ message }}</strong></p><br>
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>{{ message }}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
             {% endfor %}
         </div>  
 </div>

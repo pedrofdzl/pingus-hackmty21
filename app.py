@@ -9,13 +9,7 @@ from flask_migrate import Migrate, current
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
 from sqlalchemy.ext.declarative import declarative_base
-<<<<<<< HEAD
-from wtforms import StringField, SubmitField, PasswordField, DateTimeField, BooleanField
-from wtforms import widgets
-from wtforms.form import Form
-=======
 from wtforms import StringField, SubmitField, PasswordField, BooleanField
->>>>>>> 68feda8c00a27d2351815617fdee081031d3220e
 from wtforms.validators import DataRequired, EqualTo
 from wtforms.widgets import TextArea
 from wtforms.ext.dateutil.fields import DateTimeField
@@ -309,6 +303,7 @@ def user_create():
         try:
             db.session.add(user)
             db.session.commit()
+            flash('User Register')
             return redirect(url_for('welcome'))
         except:
             flash("Something went wrong")
