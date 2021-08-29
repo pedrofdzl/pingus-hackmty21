@@ -242,7 +242,7 @@ def classes():
     return render_template('classes.html')
     
 @app.route('/profile')
-@login_required
+#@login_required
 def profile():
     return render_template('profile.html')
 
