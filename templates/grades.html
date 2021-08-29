@@ -2,8 +2,33 @@
 
 {% block head %}
 <title>Grades</title>
+<style>
+    a {
+        text-decoration: none;
+    }
+</style>
 {% endblock %}
 
 {% block body %}
+<div class="mx-auto col-lg-8 px-0 my-5 text-left">
 
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>{{ message }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Grades</li>
+        </ol>
+    </nav>
+</div>
+<div class="col-md-10 mx-auto col-lg-5 px-4 py-5 my-5 text-center bg-light rounded-3 border">
+    <h1 class="display-5 fw-bold">Grade point average</h1>
+    <hr>
+    <h2>Your gpa is: {{ gpa }}</h2>
+</div>
 {% endblock %}

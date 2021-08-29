@@ -25,6 +25,8 @@
     <h1 class="display-5 fw-bold lh-1 mb-3">{{clase.name}}</h1>
     <hr>
     <a class="btn btn-primary float-xxl-end" href="{{ url_for('class_students', id=clase.id) }}">See students</a>
+    <p class="float-end">&nbsp;</p>
+    <a class="btn btn-warning float-xxl-end" href="{{ url_for('class_rankings', classid=clase.id) }}">Rankings</a>
     {% for user in clase.users %}
     {% if user.isTeacher %}
     <h5>Teacher: {{ user.firstName }} {{ user.lastName }}</h5>
@@ -36,6 +38,7 @@
 <p><strong>{{ message }}</strong></p><br>
 {% endfor %}
 <div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
+<<<<<<< HEAD
     <h1>Quizzes</h1>
     <hr>
     {% if not clase.quizzes[0] %}
@@ -45,12 +48,30 @@
             <a href="{{url_for('quiz_detail', classid=clase.id, quizid=quiz.id)}}">{{quiz.name}}</h3>
         {% endfor %}
     {% endif %}
+=======
+        <h1>Quizzes</h1>
+        <hr>
+        {% if not clase.quizzes[0] %}
+            <h4>It looks like there are no quizzes &#128526</h4>
+        {% else %}
+            {% for quiz in clase.quizzes %}
+                <a class="btn btn-secondary" href="{{url_for('quiz_detail', classid=clase.id, quizid=quiz.id)}}">{{quiz.name}}</a>
+            {% endfor %}
+        {% endif %}
+>>>>>>> 2e35b1a8ea60db3ff5e377dbae1c23838c47c752
         
     {% if current_user.isTeacher %}
         <br>
+<<<<<<< HEAD
         <a class="btn btn-success" href="{{url_for('quiz_create', classid=clase.id)}}">Add quiz</a>
     {% endif %}
 </div> 
+=======
+            <br>
+            <a class="btn btn-success" href="{{url_for('quiz_create', classid=clase.id)}}">Add quiz</a>
+        {% endif %}
+    </div>
+>>>>>>> 2e35b1a8ea60db3ff5e377dbae1c23838c47c752
 
 <div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
     <h1>Lectures</h1>

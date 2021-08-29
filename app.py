@@ -64,6 +64,7 @@ class User(db.Model, UserMixin):
     dateJoined = db.Column(db.DateTime)
     blogPosts = db.relationship('BlogPost', backref='owner_user', overlaps="blogPosts,owner_user")
     submissions = db.relationship('Submission', backref='owner_user', uselist=True)
+    assignments = db.relationship('Assignment', backref='owner_user', uselist=True)
     notification_id = db.Column(db.Integer, db.ForeignKey('notification.id'))
 
     @property
@@ -126,6 +127,8 @@ class Assignment(db.Model):
     dateDue = db.Column(db.DateTime, nullable=False, default=datetime.today)
     submissions = db.relationship('Submission', backref='owner_assignment', uselist=True)
     class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    submited = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return 'Activity ' + str(self.id) 
@@ -334,7 +337,7 @@ def user_create():
         try:
             db.session.add(user)
             db.session.commit()
-            flash('User Register')
+            flash('User Registered!')
             return redirect(url_for('welcome'))
         except:
             flash("Something went wrong")
@@ -360,7 +363,9 @@ def user_update(id):
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    return render_template('dashboard.html')
+    assignments = current_user.assignments
+    submissions = current_user.submissions
+    return render_template('dashboard.html', assignments=assignments, submissions=submissions)
 
 @app.route('/grades')
 @login_required
@@ -370,8 +375,19 @@ def grades():
     if not current_user.isTeacher:
         submissions = Submission.query.filter_by(user_id=current_user.id).all()
 
+    sum = 0
+    c = 0
+    if submissions:
+        for submission in submissions:
+            sum += submission.grade
+            c += 1
+        if(c > 0):
+            gpa = sum / c
+    else:
+        gpa = 0
+    
 
-    return render_template('grades.html', assignments=submissions)
+    return render_template('grades.html', gpa=gpa)
     
 @app.route('/classes', methods=['GET', 'POST'])
 @login_required
@@ -384,6 +400,14 @@ def classes():
 @app.route('/profile')
 @login_required
 def profile():
+    sum = 0
+    for submission in current_user.submissions:
+        sum += submission.grade
+    current_user.score = sum
+    try:
+        db.session.commit()
+    except:
+        db.session.rollback()
     return render_template('profile.html')
 
 @app.route('/logout')
@@ -507,8 +531,6 @@ def class_add(classid, studid):
 
     try:
         clase.users.append(user)
-        notification = Notification(name="You've been signed up to a new class!", subject="You are now part of the class: {{ clase.name }}", receivers=user)
-        db.session.add(notification)
         db.session.commit()
         flash('Student Added Succesfully')
     except:
@@ -612,6 +634,11 @@ def assignment_create(classid):
     # print(form.dueDate.data)
     if request.method == 'POST' and form.validate():
         assignment = Assignment(name=form.name.data, description=form.description.data, dateDue=form.dateDue.data)
+        students = User.query.filter_by(isTeacher = False).all()
+        for student in students:
+            for c in student.classes:
+                if(c == clase):
+                    student.assignments.append(assignment)
         assignment.class_id = clase.id
 
         try:
@@ -659,7 +686,7 @@ def assignment_detail(classid, assid):
     if current_user.isTeacher:
         submissions = Submission.query.filter_by(assignment_id=assignment.id).all()
 
-    return render_template('assignment_detail.html', clase=clase, assignment=assignment, submission=submission, submissions=submissions)
+    return render_template('assignment_detail.html', clase=clase, assignment=assignment, submission=submission, submissions=submissions, user=User)
 
 
 @app.route('/classes/detail/<int:classid>/assignment/delete/<int:assid>')
@@ -691,6 +718,7 @@ def submission_upload(classid, assid):
         submission = Submission(content=form.content.data)
         submission.user_id = current_user.id
         submission.assignment_id = assignment.id
+        assignment.submited = True
 
         try:
             db.session.add(submission)
@@ -780,9 +808,6 @@ def submission_grade(classid, assid, subid):
     return render_template('submission_grade.html',  clase=clase, assignment=assignment, submission=submission, form=form)
 
 
-
-
-
 @app.route('/classes/detail/<int:classid>/forum/blogPost/create', methods=['GET','POST'])
 def blogPost_create(classid):
     clase = Class.query.get_or_404(classid)
@@ -848,6 +873,13 @@ def blogPost_detail(classid, postid):
     blogPost = BlogPost.query.get_or_404(postid)
 
     return render_template('class_detail.html', clase=clase)
+
+@app.route('/classes/detail/<int:classid>/rankings')
+def class_rankings(classid):
+    clase = Class.query.get_or_404(classid)
+    users = clase.users.filter_by(isTeacher = False).order_by(User.score.desc()).all()
+
+    return render_template('class_rankings.html', clase=clase, users = users)
 
 @app.route('/classes/detail/<int:classid>/quiz/create', methods=['GET','POST'])
 def quiz_create(classid):

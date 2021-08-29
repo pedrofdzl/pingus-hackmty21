@@ -22,14 +22,16 @@
                 {% if current_user.isTeacher %}
                 <a class="btn btn-primary" href="{{url_for('assignment_update', classid=clase.id, assid=assignment.id)}}">Edit assignment</a>
                 <a class="btn btn-danger" href="{{url_for('assignment_delete', classid=clase.id, assid=assignment.id)}}">Delete assignment</a>
-
-                <h3>Assignments</h3>
+                <br>
+                <br>
+                <br>
+                <h3>Work submissions by students</h3>
                 <hr>
                 {% if submissions %}
 
                     {% for sub in submissions %}
-                        <p><strong>User: <a href="{{ url_for('submission_detail', classid=clase.id, assid=assignment.id, subid=sub.id) }}">
-                            {{ sub.user_id }}</a>
+                        <p><strong>Submission by: <a href="{{ url_for('submission_detail', classid=clase.id, assid=assignment.id, subid=sub.id) }}">
+                            {{ user.query.get_or_404(sub.user_id).firstName }} {{ user.query.get_or_404(sub.user_id).lastName }}</a>
                             {% if sub.grade %}
                             Grade: {{ sub.grade }}
                             {% endif %}
@@ -41,26 +43,12 @@
                 {% else %}
                 <!-- UPLOAD WORK -->
                     {% if submission %}
-                    <h5>Already Submited -- <a href="{{ url_for('submission_detail', classid=clase.id, assid=assignment.id, subid=submission.id)}}">Review Submission</a></h5>
-
+                    <a class="btn btn-primary float-end" href="{{ url_for('submission_detail', classid=clase.id, assid=assignment.id, subid=submission.id)}}">Review my submission</a>
                     {% else %}
-                    <a class="btn btn-success" href="{{url_for('submission_upload', classid=clase.id, assid=assignment.id)}}">Upload Submission</a>
+                    <a class="btn btn-success" style="display: inline;" href="{{url_for('submission_upload', classid=clase.id, assid=assignment.id)}}">Upload submission</a>
                     {% endif %}
 
                 {% endif %}
-            </div>
-            {% endfor %}
-            <p>{{ assignment.description }}</p>
-            {% if current_user.isTeacher %}
-            <a class="btn btn-primary"
-                href="{{url_for('assignment_update', classid=clase.id, assid=assignment.id)}}">Edit assignment</a>
-            <a class="btn btn-danger"
-                href="{{url_for('assignment_delete', classid=clase.id, assid=assignment.id)}}">Delete assignment</a>
-            {% else %}
-            <!-- UPLOAD WORK -->
-            <a class="btn btn-success"
-                href="{{url_for('assignment_update', classid=clase.id, assid=assignment.id)}}">Upload assignment</a>
-            {% endif %}
         </div>
 </div>
 
