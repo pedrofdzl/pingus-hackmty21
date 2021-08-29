@@ -6,10 +6,20 @@
 
 
 {% block body %}
+
+{% for message in get_flashed_messages() %}
+<p><strong>{{ message }}</strong></p><br>
+{% endfor %}
     <h1>Lecture: {{ lecture.name }}</h1>
     <hr>
 
     <p>{{ lecture.content }}</p>
+
+
+    <span>
+        <a href="{{url_for('lecture_update', classid=clase.id, lectid=lecture.id)}}">Edit Lecture</a>
+        <a href="{{url_for('lecture_delete', classid=clase.id, lectid=lecture.id)}}">Delete Lecture</a>
+    </span>
 
 
 

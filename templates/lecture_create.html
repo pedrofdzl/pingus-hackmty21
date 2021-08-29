@@ -6,7 +6,10 @@
 
 
 {% block body %}
-    
+{% for message in get_flashed_messages() %}
+<p><strong>{{ message }}</strong></p><br>
+{% endfor %}
+
     <h1>Lecture Create</h1>
 
     <form method="POST">
@@ -16,10 +19,10 @@
 
         {{ form.name.label(class="form-label") }}
         {{ form.name(class="form-control") }} <br>
-        {{ form.name.label(class="form-label") }}
-        {{ form.name(class="form-control") }} <br>
+        {{ form.content.label(class="form-label") }}
+        {{ form.content(class="form-control") }} <br>
 
-        {{% form.submit() %}}
+        {{ form.submit() }}
 
 
     </form>

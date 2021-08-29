@@ -7,6 +7,9 @@
 
 
 {% block body %}
+{% for message in get_flashed_messages() %}
+<p><strong>{{ message }}</strong></p><br>
+{% endfor %}
     <h1>Assignment: {{ assignment.name }}</h1>
     <hr>
 

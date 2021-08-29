@@ -53,7 +53,20 @@
     <div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
         <h1>Forum</h1>
         <hr>
+        {% if not clase.forum.blogPosts[0] %}
+                <h4>Looks like the forum is empty &#128546</h4>
+                <a href="{{url_for('blogPost_create', classid=clase.id)}}">Add Blog Post</h3>
+            {% else %}
+                {% for post in clase.forum.blogPosts %}
+                <h3>{{post.title}}</h3>
+                <p>{{post.content}}</p>
+                <small>Created by: {{post.user.firstName}} {{post.user.lastName}}</small>
+                <small>Date: {{post.date}}</small>
+                {% endfor %}
+            {% endif %}
     </div>
+        
+    </ul>
 
 </div>
     

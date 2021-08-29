@@ -7,7 +7,15 @@
 
 
 {% block body %}
-    
+
+{% for message in get_flashed_messages() %}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>{{ message }}</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+{% endfor %}
+
     <h1>Assignment Create</h1>
 
     <form method="POST">
@@ -21,10 +29,10 @@
         {{ form.description.label(class="form-label") }}
         {{ form.description(class="form-control") }} <br>
        
-        {{ form.dueDate.label(class="form-label") }}
-        {{ form.dueDate(class="form-control") }} <br>
+        {{ form.dateDue.label(class="form-label") }}
+        {{ form.dateDue(class="form-control", type="date") }} <br>
 
-        {{% form.submit() %}}
+        {{ form.submit() }}
 
 
     </form>

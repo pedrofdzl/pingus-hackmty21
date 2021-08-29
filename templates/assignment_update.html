@@ -7,7 +7,9 @@
 
 
 {% block body %}
-    
+{% for message in get_flashed_messages() %}
+<p><strong>{{ message }}</strong></p><br>
+{% endfor %}
     <h1>Assignment Update</h1>
 
     <form method="POST">
@@ -21,10 +23,10 @@
         {{ form.description.label(class="form-label") }}
         {{ form.description(class="form-control") }} <br>
        
-        {{ form.dueDate.label(class="form-label") }}
-        {{ form.dueDate(class="form-control") }} <br>
+        {{ form.dateDue.label(class="form-label") }}
+        {{ form.dateDue(class="form-control") }} <br>
 
-        {{% form.submit() %}}
+        {{ form.submit() }}
 
 
     </form>
