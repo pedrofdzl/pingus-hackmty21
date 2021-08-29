@@ -5,27 +5,29 @@
 {% endblock %}
 
 {% block body %}
-<<<<<<< HEAD
-<div class="container col-xl-10 col-xxl-8 px-4 py-5">
-    <h2 class="display-4 fw-bold lh-1 mb-3 text-center">{{clase.name}}</h1>
-        <br>
-        <div class="col-md-10 mx-auto col-lg-5">
-            {% for message in get_flashed_messages() %}
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <strong>{{ message }}</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            {% endfor %}
-        </div>  
-=======
 <div class="mx-auto col-lg-8 px-0 my-5 text-left">
+    
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>{{ message }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+      
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+          <li class="breadcrumb-item"><a href="{{ url_for('classes') }}">Classes</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{{ clase.name }}</li>
+        </ol>
+      </nav>
+
     <h1 class="display-5 fw-bold lh-1 mb-3">{{clase.name}}</h1>
     {% for user in clase.users %}
         {% if user.isTeacher %}
             <h5>Teacher: {{ user.firstName }} {{ user.lastName }}</h5>
         {% endif %}
     {% endfor %}
->>>>>>> 7802410561023f395b347a068b88c805cd3d2f26
 </div>
     {% for message in get_flashed_messages() %}
     <p><strong>{{ message }}</strong></p><br>
