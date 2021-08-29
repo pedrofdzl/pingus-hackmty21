@@ -1,6 +1,6 @@
 from operator import sub
 from typing import Text
-from flask import Flask, render_template, redirect, flash, url_for, request
+from flask import Flask, render_template, redirect, flash, url_for, request, session
 from datetime import datetime
 
 # DB dependencies
@@ -11,6 +11,7 @@ from flask_migrate import Migrate, current
 from flask_wtf import FlaskForm
 
 from wtforms import StringField, SubmitField, PasswordField, BooleanField, IntegerField
+from wtforms.fields.core import SelectField
 from wtforms.validators import DataRequired, EqualTo, ValidationError
 from wtforms.widgets import TextArea
 from wtforms.ext.dateutil.fields import DateTimeField
@@ -289,6 +290,9 @@ class GradeForm(FlaskForm):
         if   0 > grade.data or grade.data > 100:
             flash('Value must be between 0-100')
             raise ValidationError('Value must be between 0-100')
+
+class PreguntaForm(FlaskForm):
+    option = SelectField('Option')
 
 
 ###################
@@ -931,6 +935,24 @@ def quiz_detail(classid, quizid):
     quiz = Quiz.query.get_or_404(quizid)
 
     return render_template('quiz_detail.html', clase=clase, quiz=quiz)
+
+@app.route('/classes/detail/<int:classid>/quiz/<int:quizid>/respond', methods=['GET','POST'])
+def quiz_respond(classid, quizid):
+    clase = Class.query.get_or_404(classid)
+    quiz = Quiz.query.get_or_404(quizid)
+    questions = quiz.questions
+    #form = PreguntaForm()
+    question_list = {question:question.answers for question in questions}
+
+    if request.method=='POST':
+        for i in question_list.keys():
+            print(i)
+            answered = request.form.get(i)
+            print(answered)
+        # for field in request.data:
+        #     print(field)
+
+    return render_template('respond_quiz.html', q=question_list, o=question_list, clase=clase, quiz=quiz)
 
 @app.route('/classes/detail/<int:classid>/quiz/<int:quizid>/question/create', methods=['GET','POST'])
 @login_required
