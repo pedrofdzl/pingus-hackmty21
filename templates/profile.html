@@ -6,9 +6,12 @@
 
 {% block body %}
 <br>
-<div class="container col-sm-8 px-4 py-5 bg-light p-5 rounded">
+<div class="mx-auto col-lg-8 px-0 my-5 text-left">
+<h1 class="display-5 fw-bold lh-1 mb-3">Your profile</h1>
+</div>
+<div class="col-md-10 mx-auto col-lg-8 px-4 py-2 my-5 text-left bg-light rounded-3 border">
     <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
-        <div class="col-lg-8">
+        <div class="col-lg-7">
             <h1 class="display-5 fw-bold lh-1 mb-3">{{ current_user.firstName }} {{ current_user.lastName }}</h1>
             <h3>
                 {% if current_user.isTeacher %}
@@ -32,9 +35,9 @@
                 <br>
                 <a href="{{url_for('user_delete', id = current_user.id)}}">Delete account</a>
         </div>
-        <div class="col-10 col-sm-8 col-lg-2 align-content-lg-end">
-            <img src="https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg" class="d-block mx-lg-auto img-fluid float-start" alt="Bootstrap Themes" width="200"
-                height="200" loading="lazy">
+        <div class="col-10 col-sm-8 col-lg-4 align-content-lg-end">
+            <img src="https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg" class="d-block mx-lg-3 img-fluid float-start" alt="Bootstrap Themes" width="300"
+                height="300" loading="lazy">
         </div>
     </div>
 </div>
