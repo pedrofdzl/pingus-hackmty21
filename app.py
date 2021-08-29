@@ -285,7 +285,7 @@ class AssignmentForm(FlaskForm):
 
 class LectureForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(),])
-    content = StringField('Content', validators=[DataRequired(),], widgets=TextArea())
+    content = StringField('Content', validators=[DataRequired(),], widget=TextArea())
     submit = SubmitField('Submit')
 
 
@@ -490,7 +490,7 @@ def class_detail(id):
     return render_template('class_detail.html', clase=clase)
 
 # Lectures
-@app.route('/classses/detail/<int:classid>/lecture/create', methods=['GET', 'POST'])
+@app.route('/classes/detail/<int:classid>/lecture/create', methods=['GET', 'POST'])
 def lecture_create(classid):
 
     clase = Class.query.get_or_404(classid)
@@ -504,10 +504,11 @@ def lecture_create(classid):
             db.session.add(lecture)
             db.session.commit()
             flash('Lecutre Created Succesfully!')
+            return redirect(url_for('lecture_detail', classid=clase.id, lectid=lecture.id))
         except:
             flash('Hooooooly Guacamoooooleeeee... Something went wrong')
 
-    return render_template('lecture.html', form=form, clase=clase)
+    return render_template('lecture_create.html', form=form, clase=clase)
 
 
 @app.route('/classes/detail/<int:classid>/lecture/update/<int:lectid>', methods=['GET', 'POST'])
@@ -525,6 +526,7 @@ def lecture_update(classid, lectid):
         try:
             db.session.commit()
             flash('Lecture Update Succesfuly!')
+            return redirect(url_for('lecture_detail', classid=clase.id, lectid=lecture.id))
         except:
             flash('Hooooooly Guacamoooooleeeee... Something went wrong')
     
@@ -540,7 +542,7 @@ def lecture_delete(classid, lectid):
         db.session.delete(lecture)
         db.session.commit()
         flash('Lecture Delete Succesfuly!')
-        return redirect(url_for('class_detail', classid=clase.id))
+        return redirect(url_for('class_detail', id=clase.id))
     except:
         db.session.rollback()
         flash('Hooooooly Guacamoooooleeeee... Something went wrong')
