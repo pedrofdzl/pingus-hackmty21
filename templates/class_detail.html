@@ -112,6 +112,7 @@
                     <small>Created by: {{post.user.firstName}} {{post.user.lastName}}</small>
                     <small>Date: {{post.date}}</small>
                     <p>{{post.content}}</p>
+                    <a href="{{url_for('blogPost_delete', classid=clase.id, postid=post.id)}}">Delete</a>
                 {% endfor %}
             {% endif %}
             <br>

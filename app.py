@@ -8,7 +8,15 @@ from flask_migrate import Migrate, current
 
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
+<<<<<<< HEAD
 from sqlalchemy.ext.declarative import declarative_base
+
+=======
+<<<<<<< HEAD
+=======
+from sqlalchemy.ext.declarative import declarative_base
+>>>>>>> 6576b99b03fcf90400d57c08c62fd0784e8e0958
+>>>>>>> 6df98eeddd7768d64151a47025b328c25286598d
 from wtforms import StringField, SubmitField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, EqualTo
 from wtforms.widgets import TextArea
@@ -38,7 +46,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # DB
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-Base = declarative_base()
 
 db.create_all()
 db.session.commit()
@@ -481,8 +488,13 @@ def class_add(classid, studid):
     clase = Class.query.get_or_404(classid)
     user = User.query.get_or_404(studid)
 
-    clase.users.append(user)
-    db.session.commit()
+    try:
+        clase.users.append(user)
+        db.session.commit()
+        flash('Student Added Succesfully')
+    except:
+        db.session.rollback()
+        flash('Student Already added!')
 
     return redirect(url_for('class_students', id=clase.id))
     
@@ -492,8 +504,13 @@ def class_remove(classid, studid):
     clase = Class.query.get_or_404(classid, studid)
     user = User.query.get_or_404(studid)
 
-    clase.users.remove(user)
-    db.session.commit()
+    try:
+        clase.users.remove(user)
+        db.session.commit()
+        flash('Student Remove succesfully')
+    except:
+        db.session.rollback()
+        flash('Student not in class')
 
     return redirect(url_for('class_students', id=clase.id))
 
@@ -658,7 +675,7 @@ def blogPost_create(classid):
         
     return render_template('blogPost_create.html', form=form, clase=clase)
 
-@app.route('/classes/detail/<int:classid>/forum/blogPost/update/<int:postid>')
+@app.route('/classes/detail/<int:classid>/forum/blogPost/update/<int:postid>', methods=['GET','POST'])
 def blogPost_update(classid, postid):
     clase = Class.query.get_or_404(classid)
     blogPost = BlogPost.query.get_or_404(postid)
@@ -672,35 +689,35 @@ def blogPost_update(classid, postid):
         try:
             db.session.commit()
             flash('Blog Post Updated Succesfuly!')
-            return redirect('blogPost_detail', classid=clase.id, postid=blogPost.id)
+            return redirect(url_for('blogPost_detail', classid=clase.id, postid=blogPost.id))
         except:
             db.session.rollback()
             flash('Hooooooly Guacamoooooleeeee... Something went wrong')
         
-    return render_template('assignment_update.html')
+    return render_template('blogPost_update.html', form=form)
 
 @app.route('/classes/detail/<int:classid>/forum/blogPost/delete/<int:postid>')
 def blogPost_delete(classid, postid):
     clase = Class.query.get_or_404(classid)
-    blogPost = Lecture.query.get_or_404(postid)
+    blogPost = BlogPost.query.get_or_404(postid)
 
     try:
         db.session.delete(blogPost)
         db.session.commit()
         flash('Blog Post Deleted Succesfuly!')
-        return redirect(url_for('forum_detail', classid=clase.id))
+        return redirect(url_for('class_detail', id=clase.id))
     except:
         db.session.rollback()
         flash('Hooooooly Guacamoooooleeeee... Something went wrong')
 
-    return redirect(url_for('blogPost_detail', classid=clase.id, postid=blogPost.id))
+    return redirect(url_for('class_detail', id=clase.id))
 
 @app.route('/classes/detail/<int:classid>/forum/blogPost/detail/<int:postid>')
 def blogPost_detail(classid, postid):
     clase = Class.query.get_or_404(classid)
     blogPost = BlogPost.query.get_or_404(postid)
 
-    return render_template('blogPost_detail.html', clase=clase, blogPost=blogPost)
+    return render_template('class_detail.html', clase=clase)
 
 # Custom Error Pages
 @app.errorhandler(404)
