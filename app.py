@@ -510,12 +510,10 @@ def lecture_detail(classid, lectid):
 @app.route('/classes/detail/<int:classid>/assignment/create', methods=['GET', 'POST'])
 def assignment_create(classid):
     clase = Class.query.get_or_404(classid)
-
     form = AssignmentForm()
 
     # print(form.dueDate.data)
     if request.method == 'POST' and form.validate():
-        print('hello')
         assignment = Assignment(name=form.name.data, description=form.description.data, dateDue=form.dateDue.data)
         assignment.class_id = clase.id
 
