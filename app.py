@@ -544,7 +544,7 @@ def lecture_delete(classid, lectid):
         db.session.rollback()
         flash('Hooooooly Guacamoooooleeeee... Something went wrong')
 
-    return render_template('lecture_delete.html', clase=clase, lecture=lecture)
+    return redirect(url_for('lecture_detail', classid=classid, lectid=lectid))
 
 
 @app.route('/classes/detail/<int:classid>/lecture/detail/<int:lectid>')

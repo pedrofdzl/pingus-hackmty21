@@ -9,5 +9,20 @@
     
     <h1>Lecture Create</h1>
 
+    <form method="POST">
+
+        {{ form.hidden_tag() }}
+
+
+        {{ form.name.label(class="form-label") }}
+        {{ form.name(class="form-control") }} <br>
+        {{ form.name.label(class="form-label") }}
+        {{ form.name(class="form-control") }} <br>
+
+        {{% form.submit() %}}
+
+
+    </form>
+
 
 {% endblock %}
