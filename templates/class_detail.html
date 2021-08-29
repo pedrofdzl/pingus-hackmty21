@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Class Detail</title>
+{% endblock %}
+
+{% block body %}
+<div class="container col-xl-10 col-xxl-8 px-4 py-5">
+    <h2 class="display-4 fw-bold lh-1 mb-3 text-center">{{clase.name}}</h1>
+        <br>
+        <div class="col-md-10 mx-auto col-lg-5">
+            {% for message in get_flashed_messages() %}
+            <p><strong>{{ message }}</strong></p><br>
+            {% endfor %}
+            
+        </div>
+</div>
+{% endblock %}
