@@ -348,7 +348,13 @@ def dashboard():
 @app.route('/grades')
 @login_required
 def grades():
-    return render_template('grades.html')
+    submissions = None
+
+    if not current_user.isTeacher:
+        submissions = Submission.query.filter_by(user_id=current_user.id).all()
+
+
+    return render_template('grades.html', assignments=submissions)
     
 @app.route('/classes', methods=['GET', 'POST'])
 @login_required
