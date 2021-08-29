@@ -10,8 +10,8 @@ from flask_migrate import Migrate, current
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
 
-from wtforms import StringField, SubmitField, PasswordField, BooleanField
-from wtforms.validators import DataRequired, EqualTo
+from wtforms import StringField, SubmitField, PasswordField, BooleanField, IntegerField
+from wtforms.validators import DataRequired, EqualTo, ValidationError
 from wtforms.widgets import TextArea
 from wtforms.ext.dateutil.fields import DateTimeField
 
@@ -275,6 +275,17 @@ class BlogPostForm(FlaskForm):
 class SubmissionForm(FlaskForm):
     content = StringField('Content', validators=[DataRequired(),], widget=TextArea())
     submit = SubmitField('Submit')
+
+
+class GradeForm(FlaskForm):
+    grade = IntegerField('Grade', description='Value must be between 0-100')
+    submit = SubmitField('Submit')
+
+    def validate_grade(self, grade):
+        if   0 > grade.data or grade.data > 100:
+            flash('Value must be between 0-100')
+            raise ValidationError('Value must be between 0-100')
+
 
 ###################
 #### All routes ##
@@ -745,12 +756,11 @@ def submission_grade(classid, assid, subid):
     assignment = Assignment.query.get_or_404(assid)
     submission = Submission.query.get_or_404(subid)
 
-    grade = None
+    form = GradeForm()
 
-    if request.method == 'POST':
-        grade = request.form['grade']
 
-        submission.grade = grade
+    if request.method == 'POST' and form.validate():
+        submission.grade = form.grade.data
 
         try:
             db.session.commit()
@@ -761,7 +771,7 @@ def submission_grade(classid, assid, subid):
             db.session.rollback()
             flash('Hooooooly Guacamoooooleeeee... Something went wrong')
     
-    return render_template('submission_grade.html',  clase=clase, assignment=assignment, submission=submission)
+    return render_template('submission_grade.html',  clase=clase, assignment=assignment, submission=submission, form=form)
 
 
 

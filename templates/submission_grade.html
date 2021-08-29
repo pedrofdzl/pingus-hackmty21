@@ -14,13 +14,20 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {% endfor %}
+
+
         <h2 class="display-4 fw-bold lh-1 mb-3 text-center">Grade Submission</h1>
             <br>
             <div class="col-md-10 mx-auto col-lg-5">
                 <form class="p-4 p-md-5 border rounded-3 bg-light" method="POST">
-    
-                        <input type="number" name="grade" id="grade">
-                        <input type="submit" value="Grade">
+                        {{ form.hidden_tag() }}
+                        
+                        {{ form.grade.label() }}
+                        {{ form.grade() }}
+                        
+                        {{ form.submit() }}
+                        <!-- <input type="number" name="grade" id="grade">
+                        <input type="submit" value="Grade"> -->
                 </form>
             </div>
     </div>

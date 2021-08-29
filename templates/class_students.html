@@ -18,7 +18,8 @@
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
           <li class="breadcrumb-item"><a href="{{ url_for('classes') }}">Classes</a></li>
-          <li class="breadcrumb-item active" aria-current="page">{{ clase.name }}</li>
+          <li class="breadcrumb-item active"><a href="{{ url_for('class_detail', id=clase.id) }}">{{ clase.name }}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Students</li>
         </ol>
       </nav>
 
