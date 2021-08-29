@@ -3,7 +3,9 @@
 {% block head %}
 <title>Classes</title>
 <style>
-    a { text-decoration: none; }
+    a {
+        text-decoration: none;
+    }
 </style>
 {% endblock %}
 
@@ -16,36 +18,38 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {% endfor %}
-      
-      <nav aria-label="breadcrumb">
+
+    <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-          <li class="breadcrumb-item active" aria-current="page">Classes</li>
+            <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Classes</li>
         </ol>
-      </nav>
+    </nav>
 
     <h1 class="display-5 fw-bold lh-1 mb-3">Your classes</h1>
     {% if current_user.isTeacher %}
-        <ul class="list-group">
-            {% for class in lista %}
-            <li class="list-group-item"><a style="color: #2d2b2f; font-size: 24px"  class="fw-bold lh-1 mb-3" href="{{url_for('class_detail', id=class.id)}}">{{class.name}}</a>
-            </li>
-            <span class="badge badge-primary badge-pill">14</span>
-            {% endfor %}
-        </ul>
-        <br>
-        <div class="text-center">
-            <form method="POST">
-                <button type="submit" class="btn btn-success" style="align-self: center;">Add class</button>
-            </form>
-        </div>
+    <ul class="list-group">
+        {% for class in lista %}
+        <li class="list-group-item"><a style="color: #2d2b2f; font-size: 24px" class="fw-bold lh-1 mb-3"
+                href="{{url_for('class_detail', id=class.id)}}">{{class.name}}</a>
+        </li>
+        <span class="badge badge-primary badge-pill">14</span>
+        {% endfor %}
+    </ul>
+    <br>
+    <div class="text-center">
+        <form method="POST">
+            <button type="submit" class="btn btn-success" style="align-self: center;">Add class</button>
+        </form>
+    </div>
     {% else %}
-        <ul class="list-group">
-            {% for class in lista %}
-            <li class="list-group-item"><a style="color: #2d2b2f; font-size: 18px"  class="fw-bold lh-1 mb-3" href="{{url_for('class_detail', id=class.id)}}">{{class.name}}</a></li>
-            {% endfor %}
-        </ul>
-        <br>
+    <ul class="list-group">
+        {% for class in lista %}
+        <li class="list-group-item"><a style="color: #2d2b2f; font-size: 24px" class="fw-bold lh-1 mb-3"
+                href="{{url_for('class_detail', id=class.id)}}">{{class.name}}</a></li>
+        {% endfor %}
+    </ul>
+    <br>
     {% endif %}
 </div>
 {% endblock %}
