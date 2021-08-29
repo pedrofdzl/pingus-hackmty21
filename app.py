@@ -7,7 +7,7 @@ from flask_migrate import Migrate
 
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField, DateTimeField, BooleanField
+from wtforms import StringField, SubmitField, PasswordField, DateTimeField, BooleanField, SelectField, SelectMultipleField
 from wtforms.validators import DataRequired, EqualTo
 
 
@@ -192,7 +192,12 @@ class RegisterForm(FlaskForm):
     isTeacher = BooleanField('Teacher')
     submit = SubmitField('Create account')
 
-
+class EditForm(FlaskForm):
+    username = StringField('Username', render_kw={'readonly': True})
+    firstName = StringField('First name', validators=[DataRequired(),])
+    lastName = StringField('Last name', validators=[DataRequired(),])
+    email = StringField('Email', render_kw={'readonly': True})
+    submit = SubmitField('Save changes')
 
 class QuizForm(FlaskForm):
     name = StringField('Quiz Name', validators=[DataRequired(),])
@@ -234,7 +239,7 @@ def welcome():
 
 
 @app.route('/register', methods=['GET', 'POST'])
-def register():
+def user_create():
     form = RegisterForm()
 
     if request.method == 'POST' and form.validate():
@@ -246,7 +251,24 @@ def register():
             return redirect(url_for('welcome'))
         except:
             flash("Something went wrong")
-    return render_template('register.html', form = form)
+    return render_template('user_create.html', form = form)
+
+@app.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
+@login_required
+def user_update(id):
+    user = User.query.get_or_404(id)
+    form = EditForm(request.form, obj=user)
+
+    if request.method == 'POST' and form.validate():
+        user.firstName = form.firstName.data
+        user.lastName = form.lastName.data
+        try:
+            db.session.commit()
+            return redirect(url_for('profile'))
+        except:
+            db.session.rollback()
+            flash("Something went wrong")
+    return render_template('user_update.html', user = user, form = form)
 
 @app.route('/dashboard')
 @login_required
@@ -264,7 +286,7 @@ def classes():
     return render_template('classes.html')
     
 @app.route('/profile')
-#@login_required
+@login_required
 def profile():
     return render_template('profile.html')
 
@@ -273,10 +295,23 @@ def profile():
 @login_required
 def logout():
     logout_user()
-    flash('You\'ve logout')
+    flash('You\'ve loggedout')
 
     return redirect(url_for('index'))
 
+@app.route('/delete-account/<int:id>', methods=['GET', 'POST'])
+@login_required
+def user_delete(id):
+    user = User.query.get_or_404(id)
+    if request.method == 'POST':
+        try:
+            db.session.delete(user)
+            db.session.commit()
+            return redirect(url_for('welcome'))
+        except:
+            db.session.rollback()
+            flash("Something went wrong")
+    return render_template('user_delete.html', user = user)
 
 # Custom Error Pages
 @app.errorhandler(404)
