@@ -7,7 +7,7 @@
 {% block body %}
 <br>
 <div class="mx-auto col-lg-8 px-0 my-5 text-left">
-<h1 class="display-5 fw-bold lh-1 mb-3">Your profile</h1>
+    <h1 class="display-5 fw-bold lh-1 mb-3">Your profile</h1>
 </div>
 <div class="col-md-10 mx-auto col-lg-8 px-4 py-2 my-5 text-left bg-light rounded-3 border">
     <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
@@ -20,24 +20,38 @@
                 Student
                 {% endif %}
             </h3>
-            <b>Username: </b><p style="display: inline;">{{ current_user.username }}</p>
+            <b>Username: </b>
+            <p style="display: inline;">{{ current_user.username }}</p>
             <p> </p>
-            <b>Email: </b><p style="display: inline;">{{ current_user.email }}</p>
+            <b>Email: </b>
+            <p style="display: inline;">{{ current_user.email }}</p>
             <p> </p>
-            <b>Classes: </b> 
+            <b>Classes: </b>
+            {% for clase in current_user.classes %}
+            {% for user in clase.users %}
+            {% if user == current_user %}
+            <p>{{ clase.name }}</p>
+            {% endif %}
+            {% endfor %}
+            {% endfor %}
+            {% if current_user.isTeacher == False %}
             <p> </p>
-            <b>Score: </b><p style="display: inline;">{{ current_user.score }}</p>
+            <b>Score: </b>
+            <p style="display: inline;">{{ current_user.score }}</p>
+            {% endif %}
             <br>
             <br>
-                <a class="btn btn-primary px-2 me-md-1"  style="display: inline;" href="{{url_for('user_update', id = current_user.id)}}">Edit</a>
-                <a class="btn btn-danger px-2 me-md-1" style="display: inline;" href="{{url_for('logout')}}">Logout</a>
-                <br>
-                <br>
-                <a href="{{url_for('user_delete', id = current_user.id)}}">Delete account</a>
+            <a class="btn btn-primary px-2 me-md-1" style="display: inline;"
+                href="{{url_for('user_update', id = current_user.id)}}">Edit</a>
+            <a class="btn btn-danger px-2 me-md-1" style="display: inline;" href="{{url_for('logout')}}">Logout</a>
+            <br>
+            <br>
+            <a href="{{url_for('user_delete', id = current_user.id)}}">Delete account</a>
         </div>
         <div class="col-10 col-sm-8 col-lg-4 align-content-lg-end">
-            <img src="https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg" class="d-block mx-lg-3 img-fluid float-start" alt="Bootstrap Themes" width="300"
-                height="300" loading="lazy">
+            <img src="https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg"
+                class="d-block mx-lg-3 img-fluid float-start" alt="Bootstrap Themes" width="300" height="300"
+                loading="lazy">
         </div>
     </div>
 </div>

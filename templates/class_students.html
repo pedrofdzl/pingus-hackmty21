@@ -6,58 +6,63 @@
 
 {% block body %}
 <div class="mx-auto col-lg-8 px-0 my-5 text-left">
-    
+
     {% for message in get_flashed_messages() %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
         <strong>{{ message }}</strong>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {% endfor %}
-      
-      <nav aria-label="breadcrumb">
+
+    <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
           <li class="breadcrumb-item"><a href="{{ url_for('classes') }}">Classes</a></li>
-          <li class="breadcrumb-item active" aria-current="page">{{ clase.name }}</li>
+          <li class="breadcrumb-item active"><a href="{{ url_for('class_detail', id=clase.id) }}">{{ clase.name }}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Students</li>
         </ol>
-      </nav>
+    </nav>
 
     <h1 class="display-5 fw-bold lh-1 mb-3">{{clase.name}}</h1>
+    <hr>
     {% for user in clase.users %}
-        {% if user.isTeacher %}
-            <h5>Teacher: {{ user.firstName }} {{ user.lastName }}</h5>
-        {% endif %}
+    {% if user.isTeacher %}
+    <h5>Teacher: {{ user.firstName }} {{ user.lastName }}</h5>
+    {% endif %}
     {% endfor %}
-
-
-    <h3>students</h3>
-        {% if current_user.isTeacher %}
-            <a href="{{ url_for('class_add_student', id=clase.id) }}">add student</a>
-        {% endif %}
-
+    <br>
+    <h3>Students</h3>
     {% if students %}
     {% for student in students %}
 
-        <ul>
-            <li>{{ student.firstName }}
-                {% if current_user.isTeacher %}
-                <a href="{{ url_for('class_remove', classid=clase.id, studid=student.id) }}">remove</a></li>
-                {% endif %}
-        </ul>
+    <ul class="list-group list-group">
+        <li class="list-group-item">{{ student.firstName }} {{ student.lastName }}
+            {% if current_user.isTeacher %}
+            <a class="btn btn-danger py-0 float-end"
+                href="{{ url_for('class_remove', classid=clase.id, studid=student.id) }}">Remove</a>
+        </li>
+        {% endif %}
+    </ul>
 
     {% endfor %}
 
     {% else %}
 
-    <h5>No students registered</h5>
+    <h6>No students registered</h6>
 
+    {% endif %}
+    <br>
+    {% if current_user.isTeacher %}
+    <a class="btn btn-success" href="{{ url_for('class_add_student', id=clase.id) }}">Add student</a>
     {% endif %}
 
 
- 
+
+
+
 
 </div>
 
 </div>
-    
+
 {% endblock %}

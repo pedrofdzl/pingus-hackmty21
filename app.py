@@ -1,3 +1,4 @@
+from operator import sub
 from typing import Text
 from flask import Flask, render_template, redirect, flash, url_for, request
 from datetime import datetime
@@ -9,11 +10,10 @@ from flask_migrate import Migrate, current
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
 
-from wtforms import StringField, SubmitField, PasswordField, BooleanField
-from wtforms.validators import DataRequired, EqualTo
+from wtforms import StringField, SubmitField, PasswordField, BooleanField, IntegerField
+from wtforms.validators import DataRequired, EqualTo, ValidationError
 from wtforms.widgets import TextArea
 from wtforms.ext.dateutil.fields import DateTimeField
-
 from sqlalchemy.orm import backref
 from sqlalchemy.ext.mutable import MutableList
 
@@ -191,7 +191,7 @@ class Answer(db.Model):
 class Submission(db.Model):
     id = db.Column(db.Integer, nullable=False, primary_key=True)
     content = db.Column(db.Text, nullable=False)
-    grade = db.Column(db.Integer, nullable=False)
+    grade = db.Column(db.Integer, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'))
 
@@ -273,6 +273,20 @@ class BlogPostForm(FlaskForm):
     submit = SubmitField('Submit')
 
 
+class SubmissionForm(FlaskForm):
+    content = StringField('Content', validators=[DataRequired(),], widget=TextArea())
+    submit = SubmitField('Submit')
+
+
+class GradeForm(FlaskForm):
+    grade = IntegerField('Grade', description='Value must be between 0-100')
+    submit = SubmitField('Submit')
+
+    def validate_grade(self, grade):
+        if   0 > grade.data or grade.data > 100:
+            flash('Value must be between 0-100')
+            raise ValidationError('Value must be between 0-100')
+
 
 ###################
 #### All routes ##
@@ -347,7 +361,13 @@ def dashboard():
 @app.route('/grades')
 @login_required
 def grades():
-    return render_template('grades.html')
+    submissions = None
+
+    if not current_user.isTeacher:
+        submissions = Submission.query.filter_by(user_id=current_user.id).all()
+
+
+    return render_template('grades.html', assignments=submissions)
     
 @app.route('/classes', methods=['GET', 'POST'])
 @login_required
@@ -361,7 +381,6 @@ def classes():
 @login_required
 def profile():
     return render_template('profile.html')
-
 
 @app.route('/logout')
 @login_required
@@ -484,6 +503,8 @@ def class_add(classid, studid):
 
     try:
         clase.users.append(user)
+        notification = Notification(name="You've been signed up to a new class!", subject="You are now part of the class: {{ clase.name }}", receivers=user)
+        db.session.add(notification)
         db.session.commit()
         flash('Student Added Succesfully')
     except:
@@ -627,8 +648,14 @@ def assignment_update(classid, assid):
 def assignment_detail(classid, assid):
     clase = Class.query.get_or_404(classid)
     assignment = Assignment.query.get_or_404(assid)
+    submissions = None
 
-    return render_template('assignment_detail.html', clase=clase, assignment=assignment)
+    submission = Submission.query.filter_by(user_id=current_user.id, assignment_id=assignment.id).first()
+
+    if current_user.isTeacher:
+        submissions = Submission.query.filter_by(assignment_id=assignment.id).all()
+
+    return render_template('assignment_detail.html', clase=clase, assignment=assignment, submission=submission, submissions=submissions)
 
 
 @app.route('/classes/detail/<int:classid>/assignment/delete/<int:assid>')
@@ -646,6 +673,111 @@ def assignment_delete(classid, assid):
         flash('Hooooooly Guacamoooooleeeee... Something went wrong')
     
     return redirect(url_for('assignment_detail', classid=clase.id, assid=assignment.id))
+
+
+
+@app.route('/classes/detail/<int:classid>/assignment/detail/<int:assid>/submission', methods=['GET', 'POST'])
+def submission_upload(classid, assid):
+    clase = Class.query.get_or_404(classid)
+    assignment = Assignment.query.get_or_404(assid)
+
+    form = SubmissionForm()
+
+    if request.method == 'POST' and form.validate():
+        submission = Submission(content=form.content.data)
+        submission.user_id = current_user.id
+        submission.assignment_id = assignment.id
+
+        try:
+            db.session.add(submission)
+            db.session.commit()
+            flash('Assignment Uploaded Succesfully')
+            return redirect(url_for('assignment_detail', classid=clase.id, assid=assignment.id))
+        except:
+            db.session.rollback()
+            flash('Hooooooly Guacamoooooleeeee... Something went wrong')
+        
+    return render_template('submission_upload.html', clase=clase, assignment=assignment, form=form)
+
+
+@app.route('/classes/detail/<int:classid>/assignment/detail/<int:assid>/submission/<int:subid>')
+def submission_detail(classid, assid, subid):
+    clase = Class.query.get_or_404(classid)
+    assignment = Assignment.query.get_or_404(assid)
+    submission = Submission.query.get_or_404(subid)
+
+    author = User.query.get_or_404(submission.user_id)
+
+    return render_template('submission_detail.html', clase=clase, assignment=assignment, submission=submission, author=author)
+
+
+@app.route('/classes/detail/<int:classid>/assignment/detail/<int:assid>/submission/<int:subid>/update', methods=['GET', 'POST'])
+def submission_update(classid, assid, subid):
+    clase = Class.query.get_or_404(classid)
+    assignment = Assignment.query.get_or_404(assid)
+    submission = Submission.query.get_or_404(subid)
+
+    form = SubmissionForm(request.form, obj=submission)
+
+    if request.method == 'POST' and form.validate():
+        submission.content = form.content.data
+
+        try:
+            db.session.commit()
+            flash('Assignment Updated Succesfully')
+            return redirect(url_for('assignment_detail', classid=clase.id, assid=assignment.id))
+        except:
+            db.session.rollback()
+            flash('Hooooooly Guacamoooooleeeee... Something went wrong')
+
+
+    return render_template('submission_update.html', clase=clase, assignment=assignment, submission=submission, form=form)
+
+
+@app.route('/classes/detail/<int:classid>/assignment/detail/<int:assid>/submission/<int:subid>/delete')
+def submission_delete(classid, assid, subid):
+    clase = Class.query.get_or_404(classid)
+    assignment = Assignment.query.get_or_404(assid)
+    submission = Submission.query.get_or_404(subid)
+    
+    
+    try:
+        db.session.delete(submission)
+        db.session.commit()
+        flash('Assignment Updated Succesfully')
+    except:
+        db.session.rollback()
+        flash('Hooooooly Guacamoooooleeeee... Something went wrong')
+
+    return redirect(url_for('assignment_detail', classid=clase.id, assid=assignment.id))
+
+
+@app.route('/classes/detail/<int:classid>/assignment/detail/<int:assid>/submission/<int:subid>/grade', methods=['GET', 'POST'])
+def submission_grade(classid, assid, subid):
+    clase = Class.query.get_or_404(classid)
+    assignment = Assignment.query.get_or_404(assid)
+    submission = Submission.query.get_or_404(subid)
+
+    form = GradeForm()
+
+
+    if request.method == 'POST' and form.validate():
+        submission.grade = form.grade.data
+
+        try:
+            db.session.commit()
+            flash('Assignment Graded Succesfully')
+            return redirect(url_for('assignment_detail', classid=clase.id, assid=assignment.id))
+
+        except:
+            db.session.rollback()
+            flash('Hooooooly Guacamoooooleeeee... Something went wrong')
+    
+    return render_template('submission_grade.html',  clase=clase, assignment=assignment, submission=submission, form=form)
+
+
+
+
 
 @app.route('/classes/detail/<int:classid>/forum/blogPost/create', methods=['GET','POST'])
 def blogPost_create(classid):

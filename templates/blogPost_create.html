@@ -6,6 +6,16 @@
 
 {% block body %}
 <div class="container col-xl-10 col-xxl-8 px-4 py-5">
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+          <li class="breadcrumb-item"><a href="{{ url_for('classes') }}">Classes</a></li>
+          <li class="breadcrumb-item active"><a href="{{ url_for('class_detail', id=clase.id) }}">{{ clase.name }}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Blog Post Create</li>
+        </ol>
+      </nav>
+
     <h2 class="display-4 fw-bold lh-1 mb-3 text-center">Create New Blog Post</h1>
         <br>
         <div class="col-md-10 mx-auto col-lg-5">
@@ -17,7 +27,7 @@
             {% endfor %}
             <form class="p-4 p-md-5 border rounded-3 bg-light" method="POST">
 
-                    {{ form.hidden_tag() }}
+                {{ form.hidden_tag() }}
 
                 <div class="form-floating mb-3">
                     {{ form.title(class="form-control", id="floatingInput", placeholder="Title of the Blog Post") }}
