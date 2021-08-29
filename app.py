@@ -10,7 +10,6 @@ from flask_migrate import Migrate, current
 from flask_wtf import FlaskForm
 from sqlalchemy.ext.declarative import declarative_base
 from wtforms import StringField, SubmitField, PasswordField, BooleanField
-from wtforms import widgets
 from wtforms.validators import DataRequired, EqualTo
 from wtforms.widgets import TextArea
 from wtforms.ext.dateutil.fields import DateTimeField
@@ -223,17 +222,17 @@ class ClaseForm(FlaskForm):
 
 class QuizForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(),])
-    description = StringField('Descriptoin', validators=[DataRequired(),], widgets=TextArea())
+    description = StringField('Descriptoin', validators=[DataRequired(),], widget=TextArea())
     submit = SubmitField('Submit')
 
 
 class QuestionForm(FlaskForm):
-    content = StringField('Content', validators=[DataRequired(),], widgets=TextArea())
+    content = StringField('Content', validators=[DataRequired(),], widget=TextArea())
     submit = SubmitField('Submit')
 
 
 class AnswerForm(FlaskForm):
-    content = StringField('Content', validators=[DataRequired(),], widgets=TextArea())
+    content = StringField('Content', validators=[DataRequired(),], widget=TextArea())
     submit = SubmitField('Submit')
 
 
@@ -257,7 +256,7 @@ class ForumForm(FlaskForm):
 
 class BlogPostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(),])
-    content = StringField('Content', validators=[DataRequired(),], widgets=TextArea())
+    content = StringField('Content', validators=[DataRequired(),], widget=TextArea())
     submit = SubmitField('Submit')
 
 
