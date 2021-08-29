@@ -8,6 +8,7 @@ from flask_migrate import Migrate, current
 
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
+from sqlalchemy.ext.declarative import declarative_base
 from wtforms import StringField, SubmitField, PasswordField, DateTimeField, BooleanField
 from wtforms import widgets
 from wtforms.validators import DataRequired, EqualTo
@@ -38,14 +39,22 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # DB
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+Base = declarative_base()
 
 db.create_all()
 db.session.commit()
 
 # Clases camelCase
-# todo lo demas snake_case
+
+users = db.Table('users',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('class_id', db.ForeignKey('class.id'))
+)
+
 class User(db.Model, UserMixin):
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
+    classes = db.relationship('Class', secondary=users, backref=db.backref('users', lazy='dynamic'))
     username = db.Column(db.String(255), unique=True, nullable=False)
     firstName = db.Column(db.String(255), nullable=False)
     lastName = db.Column(db.String(255), nullable=False)
@@ -87,6 +96,7 @@ def load_user(id):
     return User.query.get(int(id))
 
 class Class(db.Model):
+    __tablename__ = 'class'
     id = db.Column(db.Integer, nullable=False, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     quizes = db.relationship('Quiz', backref='owner_class')
@@ -359,7 +369,7 @@ def classes():
     return render_template('classes.html')
     
 @app.route('/profile')
-@login_required
+#@login_required
 def profile():
     return render_template('profile.html')
 
