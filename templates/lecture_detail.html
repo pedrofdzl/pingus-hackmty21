@@ -37,14 +37,7 @@
                 <a class="btn btn-danger" href="{{url_for('lecture_delete', classid=clase.id, lectid=lecture.id)}}">Delete lecture</a>
                 {% endif %}
             </div>
-            {% endfor %}
-            <p>{{ lecture.content }}</p>
-            {% if current_user.isTeacher %}
-            <a class="btn btn-primary" href="{{url_for('lecture_update', classid=clase.id, lectid=lecture.id)}}">Edit
-                lecture</a>
-            <a class="btn btn-danger" href="{{url_for('lecture_delete', classid=clase.id, lectid=lecture.id)}}">Delete
-                lecture</a>
-            {% endif %}
+        
         </div>
 </div>
 

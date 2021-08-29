@@ -901,8 +901,18 @@ def blogPost_detail(classid, postid):
 @app.route('/classes/detail/<int:classid>/rankings')
 @login_required
 def class_rankings(classid):
+
     clase = Class.query.get_or_404(classid)
     users = clase.users.filter_by(isTeacher = False).order_by(User.score.desc()).all()
+    for user in users:
+        sum =0 
+        for submission in user.submissions:
+            sum += submission.grade
+        user.score = sum
+        try:
+            db.session.commit()
+        except:
+            db.session.rollback()
 
     return render_template('class_rankings.html', clase=clase, users = users)
 

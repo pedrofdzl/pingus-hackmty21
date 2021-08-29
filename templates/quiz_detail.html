@@ -24,8 +24,11 @@
                 {% endfor %}
             </div>
             <div>
-                <a class='btn btn-success' href="{{url_for('question_create', classid=clase.id, quizid=quiz.id)}}">Create Question</a>
-                <a class='btn btn-success' href="{{url_for('quiz_respond', classid=clase.id, quizid=quiz.id)}}">Respond Quiz</a>
+                {% if current_user.isTeacher %}
+                <a class='btn btn-success float-end' href="{{url_for('question_create', classid=clase.id, quizid=quiz.id)}}">Create Question</a>
+                {% else %}
+                <a class='btn btn-success float-end' href="{{url_for('quiz_respond', classid=clase.id, quizid=quiz.id)}}">Respond Quiz</a>
+                {% endif %}
             </div> 
     </div>
 
