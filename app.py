@@ -194,6 +194,7 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired(),])
     submit = SubmitField('Log In!')
 
+
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(),])
     firstName = StringField('First name', validators=[DataRequired(),])
@@ -204,6 +205,7 @@ class RegisterForm(FlaskForm):
     isTeacher = BooleanField('Teacher')
     submit = SubmitField('Create account')
 
+
 class EditForm(FlaskForm):
     username = StringField('Username', render_kw={'readonly': True})
     firstName = StringField('First name', validators=[DataRequired(),])
@@ -211,29 +213,11 @@ class EditForm(FlaskForm):
     email = StringField('Email', render_kw={'readonly': True})
     submit = SubmitField('Save changes')
 
-# class Class(db.Model):
-#     id = db.Column(db.Integer, nullable=False, primary_key=True)
-#     name = db.Column(db.String(255), nullable=False)
-#     quizes = db.relationship('Quiz', backref='owner_class')
-#     assignments = db.relationship('Assignment', backref='owner_class')
-#     forum = db.relationship('Forum', backref='owner_class')
-#     lectures = db.relationship('Lecture', backref='owner_class')
-
-#     def __repr__(self):
-#         return 'Class ' + str(self.id) 
 
 class ClaseForm(FlaskForm):
     name = StringField('Class name', validators=[DataRequired(message='Name is Required'),])
     submit = SubmitField('Create Class')
     
-
-# class Quiz(db.Model):
-#     id = db.Column(db.Integer, nullable=False, primary_key=True)
-#     name = db.Column(db.String(255), nullable=False)
-#     description = db.Column(db.Text, nullable=False)
-#     date = db.Column(db.DateTime, nullable=False, default=datetime.today)
-#     questions = db.relationship('Question', backref='owner_quiz')
-#     class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
 
 class QuizForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(),])
@@ -241,33 +225,14 @@ class QuizForm(FlaskForm):
     submit = SubmitField('Submit')
 
 
-# class Question(db.Model):
-#     id = db.Column(db.Integer, nullable=False, primary_key=True)
-#     content = db.Column(db.String(255), nullable=False)
-#     weight = db.Column(db.Float, nullable=False)
-#     answers = db.relationship('Answer', backref='owner_question')
-#     quiz_id = db.Column(db.Integer, db.ForeignKey('quiz.id'))
-
 class QuestionForm(FlaskForm):
     content = StringField('Content', validators=[DataRequired(),], widgets=TextArea())
     submit = SubmitField('Submit')
 
-# class Answer(db.Model):
-#     id = db.Column(db.Integer, nullable=False, primary_key=True)
-#     content = db.Column(db.Text, nullable=False)
-    # question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
+
 class AnswerForm(FlaskForm):
     content = StringField('Content', validators=[DataRequired(),], widgets=TextArea())
     submit = SubmitField('Submit')
-
-
-# class Assignment(db.Model):
-#     id = db.Column(db.Integer, nullable=False, primary_key=True)
-#     name = db.Column(db.String(255), nullable=False)
-#     description = db.Column(db.Text, nullable=False)
-#     datePublished = db.Column(db.DateTime, nullable=False, default=datetime.today)
-#     dateDue = db.Column(db.DateTime, nullable=False, default=datetime.today)
-#     class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
 
 class AssignmentForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(),])
@@ -276,46 +241,20 @@ class AssignmentForm(FlaskForm):
     submit = SubmitField('Submit')
     
 
-# class Lecture(db.Model):
-#     id = db.Column(db.Integer, nullable=False, primary_key=True)
-#     name = db.Column(db.String(255), nullable=False)
-#     content = db.Column(db.Text, nullable=False)
-#     date = db.Column(db.DateTime, nullable=False, default=datetime.today)
-#     class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
-
 class LectureForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(),])
     content = StringField('Content', validators=[DataRequired(),], widget=TextArea())
     submit = SubmitField('Submit')
 
 
-# class Forum(db.Model):
-#     id = db.Column(db.Integer, nullable=False, primary_key=True)
-#     name = db.Column(db.String(255), nullable=False)
-#     blogPosts = db.relationship('BlogPost', backref='owner_forum')
-#     class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
-
 class ForumForm(FlaskForm):
     name = StringField('name', validators=[DataRequired(),])
     submit = SubmitField('Submit')
-
-
-# class BlogPost(db.Model):
-#     __tablename__ = 'blogpost'
-#     id = db.Column(db.Integer, nullable=False, primary_key=True)
-#     title = db.Column(db.String(255))
-#     content = db.Column(db.Text, nullable=False)
-#     user = db.relationship('User', backref='owner_blogpost')
-#     date = db.Column(db.DateTime, nullable=False, default=datetime.today)
-#     forum_id = db.Column(db.Integer, db.ForeignKey('forum.id'))
 
 class BlogPostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(),])
     content = StringField('Content', validators=[DataRequired(),], widgets=TextArea())
     submit = SubmitField('Submit')
-
-
-
 
 
 
