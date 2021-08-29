@@ -1,10 +1,20 @@
 from enum import unique
+from re import DEBUG
 from flask import Flask, render_template, redirect, flash, url_for, request
 from datetime import datetime
 
 # DB dependencies
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+
+# WHAT THE FORMS!!!
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, PasswordField
+from wtforms import validators
+from wtforms.fields.core import BooleanField
+from wtforms.validators import DataRequired, EqualTo
+
+
 from sqlalchemy.orm import backref
 from sqlalchemy.ext.mutable import MutableList
 
@@ -22,12 +32,16 @@ import bcrypt
 from random import randint
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pingus.db'
 app.config['SECRET_KEY'] = 'MySuperSecretKey'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pingus.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # DB
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+db.create_all()
+db.session.commit()
 
 # Clases camelCase
 # todo lo demas snake_case
@@ -51,7 +65,6 @@ class User(db.Model, UserMixin):
     @password.setter
     def password(self, password):
         engine = randint(0,1)
-
         if engine == 0:
             self.passwordHash = generate_password_hash(password)
         else:
@@ -59,12 +72,15 @@ class User(db.Model, UserMixin):
 
     def verify_password(self, password):
         
-        if check_password_hash(self.passwordHash, password):
+        if check_password_hash(self.passwordHash, password.encode('utf-8')):
             return True
         elif bcrypt.checkpw(password.encode('utf-8'), self.passwordHash):
             return True
         
         return False
+
+    def get_id(self):
+        return self._id
 
 
     def __repr__(self) -> str:
@@ -77,19 +93,19 @@ class User(db.Model, UserMixin):
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'welcome'
+login_manager.login_message = 'Please Login to access'
 
 @login_manager.user_loader
-def load_user(user):
-    return User.query.get(user)
+def load_user(id):
+    return User.query.get(int(id))
 
-# Clases camelCase
 class Class(db.Model):
     id = db.Column(db.Integer, nullable=False, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
-    quizes = db.relationship('Quiz', backref='clase')
-    assignments = db.relationship('Assignment', backref='clase')
-    forum = db.relationship('Forum', backref='clase')
-    lectures = db.relationship('Lecture', backref='clase')
+    quizes = db.relationship('Quiz', backref='owner_class')
+    assignments = db.relationship('Assignment', backref='owner_class')
+    forum = db.relationship('Forum', backref='owner_class')
+    lectures = db.relationship('Lecture', backref='owner_class')
 
     def __repr__(self):
         return 'Class ' + str(self.id) 
@@ -99,11 +115,12 @@ class Quiz(db.Model):
     name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=False)
     date = db.Column(db.DateTime, nullable=False, default=datetime.today)
-    questions = db.relationship('Question', backref='quizz')
+    questions = db.relationship('Question', backref='owner_quiz')
     class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
 
     def __repr__(self):
         return 'Quiz ' + str(self.id) 
+<<<<<<< HEAD
 
 class Assignment(db.Model):
     id = db.Column(db.Integer, nullable=False, primary_key=True)
@@ -129,7 +146,7 @@ class Lecture(db.Model):
 class Forum(db.Model):
     id = db.Column(db.Integer, nullable=False, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
-    blogPosts = db.relationship('BlogPost', backref='foro')
+    blogPosts = db.relationship('BlogPost', backref='owner_forum')
     class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
 
     def __repr__(self):
@@ -140,7 +157,7 @@ class BlogPost(db.Model):
     id = db.Column(db.Integer, nullable=False, primary_key=True)
     title = db.Column(db.String(255))
     content = db.Column(db.Text, nullable=False)
-    user = db.relationship('User', backref='blog')
+    user = db.relationship('User', backref='owner_blogpost')
     date = db.Column(db.DateTime, nullable=False, default=datetime.today)
     forum_id = db.Column(db.Integer, db.ForeignKey('forum.id'))
 
@@ -151,18 +168,16 @@ class Question(db.Model):
     id = db.Column(db.Integer, nullable=False, primary_key=True)
     content = db.Column(db.String(255), nullable=False)
     weight = db.Column(db.Float, nullable=False)
-    answers = db.relationship('Answer', backref='question')
+    answers = db.relationship('Answer', backref='owner_question')
     quiz_id = db.Column(db.Integer, db.ForeignKey('quiz.id'))
-
-    def __repr__(self):
-        return 'Question ' + str(self.id) 
+=======
 
 class Notification(db.Model):
     id = db.Column(db.Integer, nullable=False, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
     date = db.Column(db.DateTime, nullable=False, default=datetime.today)
     subject = db.Column(db.String(255), nullable=False)
-    receivers = db.relationship('User', backref='notificacion')
+    receivers = db.relationship('User', backref='owner_notification')
 
     def __repr__(self):
         return 'Notification ' + str(self.id) 
@@ -175,6 +190,29 @@ class Answer(db.Model):
     def __repr__(self):
         return 'Answer ' + str(self.id) 
 
+
+
+
+>>>>>>> 12f52d10cbab15680a01d17984834fe609dbd24f
+
+###############
+### Forms ####
+#############
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(),])
+    password = PasswordField('Password', validators=[DataRequired(),])
+    submit = SubmitField('Log In!')
+
+class RegisterForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired(),])
+    firstName = StringField('First name', validators=[DataRequired(),])
+    lastName = StringField('Last name', validators=[DataRequired(),])
+    email = StringField('Email', validators=[DataRequired(),])
+    password = PasswordField('Password', validators=[DataRequired(),])
+    confirmPassword = PasswordField('Confirm Password', validators=[EqualTo("password"),])
+    isTeacher = BooleanField('Teacher')
+    submit = SubmitField('Create account')
+
 ###################
 #### All routes ##
 ##################
@@ -184,22 +222,43 @@ def index():
         return redirect(url_for("dashboard"))
     else:
         return redirect(url_for("welcome"))
-# todo lo demas snake_case
+
+
 @app.route('/welcome', methods=['GET', 'POST'])
 def welcome():
-    # username =''
-    # password = ''
-    # user = User.query.filter_by(username=username)
+    form = LoginForm()
+    # print('hello')
+    if request.method == 'POST' and form.validate():
+        user = User.query.filter_by(username=form.username.data).first()
+        # print('found')
+        
+        if user:
+            if user.verify_password(form.password.data):
+                login_user(user)
+                flash(f'Welcome back {user.firstName}!')
+                return redirect(url_for('dashboard'))
+            else:
+                flash('Something went wrong')
+        else:
+            flash('Something went wrong')
 
-    # if user:
-    #     if user.verify_password(password):
-    #         login_user(user)
-    #         flash(f'Welcome Back {user.firstName}')
-    return render_template('welcome.html')
+    return render_template('welcome.html', form=form)
 
-@app.route('/register')
+
+@app.route('/register', methods=['GET', 'POST'])
 def register():
-    return render_template('register.html')
+    form = RegisterForm()
+
+    if request.method == 'POST' and form.validate():
+        user = User(username = form.username.data, firstName = form.firstName.data, lastName = form.lastName.data, email = form.email.data, isTeacher = form.isTeacher.data, dateJoined = datetime.today())
+        user.password = form.password.data
+        try:
+            db.session.add(user)
+            db.session.commit()
+            return redirect(url_for('welcome'))
+        except:
+            flash("Something went wrong")
+    return render_template('register.html', form = form)
 
 @app.route('/dashboard')
 @login_required
@@ -221,6 +280,14 @@ def classes():
 def profile():
     return render_template('profile.html')
 
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You\'ve logout')
+
+    return redirect(url_for('index'))
 
 
 # Custom Error Pages
