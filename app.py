@@ -1,5 +1,3 @@
-from enum import unique
-from re import DEBUG
 from flask import Flask, render_template, redirect, flash, url_for, request
 from datetime import datetime
 
@@ -9,9 +7,7 @@ from flask_migrate import Migrate
 
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, PasswordField
-from wtforms import validators
-from wtforms.fields.core import BooleanField
+from wtforms import StringField, SubmitField, PasswordField, DateTimeField, BooleanField
 from wtforms.validators import DataRequired, EqualTo
 
 
@@ -64,20 +60,11 @@ class User(db.Model, UserMixin):
 
     @password.setter
     def password(self, password):
-        engine = randint(0,1)
-        if engine == 0:
-            self.passwordHash = generate_password_hash(password)
-        else:
-            self.passwordHash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        self.passwordHash = generate_password_hash(password)
 
-    def verify_password(self, password):
-        
-        if check_password_hash(self.passwordHash, password.encode('utf-8')):
-            return True
-        elif bcrypt.checkpw(password.encode('utf-8'), self.passwordHash):
-            return True
-        
-        return False
+
+    def verify_password(self, password):        
+        return check_password_hash(self.passwordHash, password)
 
     def get_id(self):
         return self._id
@@ -213,6 +200,15 @@ class RegisterForm(FlaskForm):
     isTeacher = BooleanField('Teacher')
     submit = SubmitField('Create account')
 
+<<<<<<< HEAD
+=======
+
+class QuizForm(FlaskForm):
+    name = StringField('Quiz Name', validators=[DataRequired(),])
+    description = StringField('Description', validators=[DataRequired(),])
+    date = DateTimeField('date')
+
+>>>>>>> be205746d77ea864cd4fe7e2d2096f437fb2f7f6
 ###################
 #### All routes ##
 ##################
