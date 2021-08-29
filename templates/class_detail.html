@@ -28,11 +28,20 @@
             <h5>Teacher: {{ user.firstName }} {{ user.lastName }}</h5>
         {% endif %}
     {% endfor %}
+
+    <a href="{{ url_for('class_students', id=clase.id) }}">See Students</a>
 </div>
+<<<<<<< HEAD
+
+
+
+    <div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
+=======
     {% for message in get_flashed_messages() %}
     <p><strong>{{ message }}</strong></p><br>
     {% endfor %}
-    <div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
+    <!-- <div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
+>>>>>>> e80ea9d2ae4cff9dd3b672f7fc6f5eb2f7a7f927
         <h1>Quizzes</h1>
         <hr>
         {% if not clase.quizes[0] %}
@@ -47,22 +56,54 @@
         <br>
             <a class="btn btn-success" href="{{url_for('classes')}}">Add quiz</a>
         {% endif %}
-    </div>
+    </div> -->
             
+    <div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
+        <h1>Lectures</h1>
+        <hr>
+        {% if not clase.lectures[0] %}
+            <h4>It looks like there are no lectures &#128526</h4>
+        {% else %}
+        <div class="list-group">
+            {% for lecture in clase.lectures %}
+                <a href="{{url_for('lecture_detail', classid=clase.id, lectid=lecture.id)}}" class="list-group-item list-group-item-action flex-column align-items-start">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{lecture.name}}</h5>
+                    </div>
+                    <p class="mb-1">{{lecture.content}}</p>
+                </a>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        {% if current_user.isTeacher %}
+        <br>
+            <a class="btn btn-success" href="{{url_for('lecture_create', classid=clase.id)}}">Add lecture</a>
+        {% endif %}
+    </div>
+
     <div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
             <h1>Assignments</h1>
             <hr>
             {% if not clase.assignments[0] %}
                 <h4>It looks like there are no assignments &#128526</h4>
             {% else %}
-                {% for quiz in clase.quizes %}
-                    <a href="{{url_for('quiz_detail', id=quiz.id)}}">{{quiz.name}}</h3>
+            <div class="list-group">
+                {% for assignment in clase.assignments %}
+                    <a href="{{url_for('assignment_detail', classid=clase.id, assid=assignment.id)}}" class="list-group-item list-group-item-action flex-column align-items-start">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{assignment.name}}</h5>
+                            <small>Due {{assignment.dateDue}}</small>
+                        </div>
+                        <p class="mb-1">{{assignment.description}}</p>
+                    </a>
                 {% endfor %}
+            </div>
             {% endif %}
 
             {% if current_user.isTeacher %}
             <br>
-                <a class="btn btn-success" href="{{url_for('classes')}}">Add assignment</a>
+                <a class="btn btn-success" href="{{url_for('assignment_create', classid=clase.id)}}">Add assignment</a>
             {% endif %}
     </div>
 
@@ -75,11 +116,18 @@
             {% else %}
                 {% for post in clase.forum.blogPosts %}
                     <h3>{{post.title}}</h3>
+<<<<<<< HEAD
                     <small>Created by: {{post.user.firstName}} {{post.user.lastName}}</small>
                     <small>Date: {{post.date}}</small>
+=======
+                    <small>Created by: {{post.user[0].firstName}} {{post.user[0].lastName}}</small>
+                    <small class="float-end">Date: {{post.date}}</small>
+>>>>>>> 76d472d0f306a6a40b5de72825b268d2a8b69fc9
                     <p>{{post.content}}</p>
                 {% endfor %}
             {% endif %}
+            <br>
+                <a class="btn btn-success" href="{{url_for('blogPost_create', classid=clase.id)}}">Add post</a>
     </div>
         
     </ul>

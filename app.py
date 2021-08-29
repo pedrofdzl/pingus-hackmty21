@@ -9,7 +9,10 @@ from flask_migrate import Migrate, current
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
 from sqlalchemy.ext.declarative import declarative_base
+<<<<<<< HEAD
 
+=======
+>>>>>>> 76d472d0f306a6a40b5de72825b268d2a8b69fc9
 from wtforms import StringField, SubmitField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, EqualTo
 from wtforms.widgets import TextArea
@@ -450,6 +453,56 @@ def class_detail(id):
 
     return render_template('class_detail.html', clase=clase)
 
+
+@app.route('/classes/detail/<int:id>/students')
+def class_students(id):
+    clase = Class.query.get_or_404(id)
+    students = clase.users.filter_by(isTeacher=False).all()
+
+    # print(students)
+
+    return render_template('class_students.html', clase=clase, students=students)
+
+@app.route('/classes/detail/<int:id>/students/add-student', methods=['GET', 'POST'])
+def class_add_student(id):
+    clase = Class.query.get_or_404(id)
+    students = None
+
+    if request.method == "POST":
+        username = request.form['student']
+        students = User.query.filter_by(username=username, isTeacher=False).all()
+    
+    else:
+        students = User.query.filter_by(isTeacher=False).all()
+
+
+
+    return render_template('class_add_student.html', clase=clase, students=students)
+
+@app.route('/classes/detail/<int:classid>/students/add-student/<int:studid>')
+def class_add(classid, studid):
+
+    clase = Class.query.get_or_404(classid)
+    user = User.query.get_or_404(studid)
+
+    clase.users.append(user)
+    db.session.commit()
+
+    return redirect(url_for('class_students', id=clase.id))
+    
+@app.route('/classes/detail/<int:classid>/students/remove-student/<int:studid>')
+def class_remove(classid, studid):
+
+    clase = Class.query.get_or_404(classid, studid)
+    user = User.query.get_or_404(studid)
+
+    clase.users.remove(user)
+    db.session.commit()
+
+    return redirect(url_for('class_students', id=clase.id))
+
+
+
 # Lectures
 @app.route('/classes/detail/<int:classid>/lecture/create', methods=['GET', 'POST'])
 def lecture_create(classid):
@@ -522,12 +575,10 @@ def lecture_detail(classid, lectid):
 @app.route('/classes/detail/<int:classid>/assignment/create', methods=['GET', 'POST'])
 def assignment_create(classid):
     clase = Class.query.get_or_404(classid)
-
     form = AssignmentForm()
 
     # print(form.dueDate.data)
     if request.method == 'POST' and form.validate():
-        print('hello')
         assignment = Assignment(name=form.name.data, description=form.description.data, dateDue=form.dateDue.data)
         assignment.class_id = clase.id
 
