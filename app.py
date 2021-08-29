@@ -107,7 +107,6 @@ class Quiz(db.Model):
 
     def __repr__(self):
         return 'Quiz ' + str(self.id) 
-<<<<<<< HEAD
 
 class Assignment(db.Model):
     id = db.Column(db.Integer, nullable=False, primary_key=True)
@@ -157,7 +156,6 @@ class Question(db.Model):
     weight = db.Column(db.Float, nullable=False)
     answers = db.relationship('Answer', backref='owner_question')
     quiz_id = db.Column(db.Integer, db.ForeignKey('quiz.id'))
-=======
 
 class Notification(db.Model):
     id = db.Column(db.Integer, nullable=False, primary_key=True)
@@ -180,7 +178,6 @@ class Answer(db.Model):
 
 
 
->>>>>>> 12f52d10cbab15680a01d17984834fe609dbd24f
 
 ###############
 ### Forms ####
@@ -200,15 +197,12 @@ class RegisterForm(FlaskForm):
     isTeacher = BooleanField('Teacher')
     submit = SubmitField('Create account')
 
-<<<<<<< HEAD
-=======
 
 class QuizForm(FlaskForm):
     name = StringField('Quiz Name', validators=[DataRequired(),])
     description = StringField('Description', validators=[DataRequired(),])
     date = DateTimeField('date')
 
->>>>>>> be205746d77ea864cd4fe7e2d2096f437fb2f7f6
 ###################
 #### All routes ##
 ##################
