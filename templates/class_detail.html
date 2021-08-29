@@ -31,17 +31,10 @@
 
     <a href="{{ url_for('class_students', id=clase.id) }}">See Students</a>
 </div>
-<<<<<<< HEAD
 
 
 
     <div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
-=======
-    {% for message in get_flashed_messages() %}
-    <p><strong>{{ message }}</strong></p><br>
-    {% endfor %}
-    <!-- <div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
->>>>>>> e80ea9d2ae4cff9dd3b672f7fc6f5eb2f7a7f927
         <h1>Quizzes</h1>
         <hr>
         {% if not clase.quizes[0] %}
