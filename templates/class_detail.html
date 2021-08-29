@@ -108,10 +108,12 @@
                 {% for post in clase.forum.blogPosts %}
                     <h3>{{post.title}}</h3>
                     <small>Created by: {{post.user[0].firstName}} {{post.user[0].lastName}}</small>
-                    <small>Date: {{post.date}}</small>
+                    <small class="float-end">Date: {{post.date}}</small>
                     <p>{{post.content}}</p>
                 {% endfor %}
             {% endif %}
+            <br>
+                <a class="btn btn-success" href="{{url_for('blogPost_create', classid=clase.id)}}">Add post</a>
     </div>
         
     </ul>

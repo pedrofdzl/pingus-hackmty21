@@ -9,10 +9,6 @@ from flask_migrate import Migrate, current
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
 from sqlalchemy.ext.declarative import declarative_base
-<<<<<<< HEAD
-=======
-
->>>>>>> b32d089672f41b8da949bdcc8188536ead06573b
 from wtforms import StringField, SubmitField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, EqualTo
 from wtforms.widgets import TextArea
