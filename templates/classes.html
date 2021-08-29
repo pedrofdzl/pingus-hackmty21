@@ -2,21 +2,31 @@
 
 {% block head %}
 <title>Classes</title>
+<style>
+    a { text-decoration: none; }
+</style>
 {% endblock %}
 
 {% block body %}
-    {% for message in get_flashed_messages() %}
-    <p><strong>{{ message }}</strong></p><br>
-    {% endfor %}
+<div class="container col-xl-10 col-xxl-8 px-4 py-5">
+
+    <h1 class="display-5 fw-bold lh-1 mb-3">Classes</h1>
     
     {% if current_user.isTeacher %}
-        {% for class in lista %}
-            <ul>
-                <li>
-                    <a href="{{url_for('class_detail', id=class.id)}}">{{class.name}}</a>
-                </li>
-            </ul>
-        {% endfor %}
+        <ul class="list-group">
+            {% for class in lista %}
+            <li class="list-group-item"><a style="color: #2d2b2f; font-size: 18px"  class="fw-bold lh-1 mb-3" href="{{url_for('class_detail', id=class.id)}}">{{class.name}}</a></li>
+            {% endfor %}
+        </ul>
+        <br>
+        <div class="text-center">
+            <form method="POST">
+                <button type="submit" class="btn btn-success" style="align-self: center;">Add class</button>
+            </form>
+        </div>
     {% endif %}
-
+    {% for message in get_flashed_messages() %}
+    <p class="align-self-center"><strong>{{ message }}</strong></p>
+    {% endfor %}
+</div>
 {% endblock %}

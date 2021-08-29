@@ -394,10 +394,12 @@ def dashboard():
 def grades():
     return render_template('grades.html')
     
-@app.route('/classes')
+@app.route('/classes', methods=['GET', 'POST'])
 @login_required
 def classes():
     class_list = current_user.classes
+    if request.method == 'POST':
+        return redirect(url_for('class_create'))
     return render_template('classes.html', lista=class_list)
     
 @app.route('/profile')
