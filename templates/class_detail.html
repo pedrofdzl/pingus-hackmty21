@@ -12,7 +12,36 @@
             {% for message in get_flashed_messages() %}
             <p><strong>{{ message }}</strong></p><br>
             {% endfor %}
-            
-        </div>
+        </div>  
 </div>
+<div class="container col-xl-10 col-xxl-8 px-4 py-5">
+    <ul>
+        <li>
+            <h1>Quizes!</h1>
+            {% if not clase.quizes[0] %}
+                <h4>It looks like there are no quizzes &#128526</h4>
+            {% else %}
+                {% for quiz in clase.quizes %}
+                    <a href="{{url_for('quiz_detail', id=quiz.id)}}">{{quiz.name}}</h3>
+                {% endfor %}
+            {% endif %}
+        </li>
+        <li>
+            <h1>Assignments!</h1>
+            {% if not clase.assignments[0] %}
+                <h4>It looks like there are no assignments &#128526</h4>
+            {% else %}
+                {% for quiz in clase.quizes %}
+                    <a href="{{url_for('quiz_detail', id=quiz.id)}}">{{quiz.name}}</h3>
+                {% endfor %}
+            {% endif %}
+        </li>
+        <li>
+            <h1>Forum</h1>
+        </li>
+        
+    </ul>
+
+</div>
+    
 {% endblock %}
