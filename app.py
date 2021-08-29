@@ -8,15 +8,7 @@ from flask_migrate import Migrate, current
 
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
-<<<<<<< HEAD
-from sqlalchemy.ext.declarative import declarative_base
 
-=======
-<<<<<<< HEAD
-=======
-from sqlalchemy.ext.declarative import declarative_base
->>>>>>> 6576b99b03fcf90400d57c08c62fd0784e8e0958
->>>>>>> 6df98eeddd7768d64151a47025b328c25286598d
 from wtforms import StringField, SubmitField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, EqualTo
 from wtforms.widgets import TextArea
@@ -106,7 +98,7 @@ class Class(db.Model):
     __tablename__ = 'class'
     id = db.Column(db.Integer, nullable=False, primary_key=True)
     name = db.Column(db.String(255), nullable=False)
-    quizes = db.relationship('Quiz', backref='owner_class')
+    quizzes = db.relationship('Quiz', backref='owner_class')
     assignments = db.relationship('Assignment', backref='owner_class')
     forum = db.relationship('Forum', backref='owner_class', uselist=False)
     lectures = db.relationship('Lecture', backref='owner_class')
@@ -173,7 +165,7 @@ class BlogPost(db.Model):
 class Question(db.Model):
     id = db.Column(db.Integer, nullable=False, primary_key=True)
     content = db.Column(db.String(255), nullable=False)
-    weight = db.Column(db.Float, nullable=False)
+    weight = db.Column(db.Float, nullable=False, default=0)
     answers = db.relationship('Answer', backref='owner_question')
     quiz_id = db.Column(db.Integer, db.ForeignKey('quiz.id'))
 
@@ -190,6 +182,7 @@ class Notification(db.Model):
 class Answer(db.Model):
     id = db.Column(db.Integer, nullable=False, primary_key=True)
     content = db.Column(db.Text, nullable=False)
+    isRight = db.Column(db.Boolean, nullable=False, default=False)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
 
     def __repr__(self):
@@ -241,7 +234,7 @@ class ClaseForm(FlaskForm):
 
 class QuizForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(),])
-    description = StringField('Descriptoin', validators=[DataRequired(),], widget=TextArea())
+    description = StringField('Description', validators=[DataRequired(),], widget=TextArea())
     submit = SubmitField('Submit')
 
 
@@ -252,6 +245,7 @@ class QuestionForm(FlaskForm):
 
 class AnswerForm(FlaskForm):
     content = StringField('Content', validators=[DataRequired(),], widget=TextArea())
+    isRight = BooleanField('Is this the right answer?')
     submit = SubmitField('Submit')
 
 
@@ -718,6 +712,86 @@ def blogPost_detail(classid, postid):
     blogPost = BlogPost.query.get_or_404(postid)
 
     return render_template('class_detail.html', clase=clase)
+
+@app.route('/classes/detail/<int:classid>/quiz/create', methods=['GET','POST'])
+def quiz_create(classid):
+    clase = Class.query.get_or_404(classid)
+
+    form = QuizForm()
+
+    if request.method == 'POST' and form.validate():
+        quiz = Quiz(name=form.name.data, description=form.description.data)
+        clase.quizzes.append(quiz)
+
+        try:
+            db.session.add(quiz)
+            db.session.commit()
+            flash('Quiz Added Succesfully')
+            return redirect(url_for('question_create', classid=clase.id, quizid=quiz.id))
+        except:
+            db.session.rollback()
+            flash('Hooooooly Guacamoooooleeeee... Something went wrong')
+        
+    return render_template('quiz_create.html', form=form, clase=clase)
+
+@app.route('/classes/detail/<int:classid>/quiz/detail/<int:quizid>')
+def quiz_detail(classid, quizid):
+    clase = Class.query.get_or_404(classid)
+    quiz = Quiz.query.get_or_404(quizid)
+
+    return render_template('quiz_detail.html', clase=clase, quiz=quiz)
+
+@app.route('/classes/detail/<int:classid>/quiz/<int:quizid>/question/create', methods=['GET','POST'])
+def question_create(classid, quizid):
+    clase = Class.query.get_or_404(classid)
+    quiz = Quiz.query.get_or_404(quizid)
+    form = QuestionForm()
+
+    if request.method == 'POST' and form.validate():
+        question = Question(content=form.content.data)
+
+        try:
+            db.session.add(question)
+            quiz.questions.append(question)
+            db.session.commit()
+            flash('Question Added Succesfully')
+            return redirect(url_for('answer_create', classid=clase.id, questionid=question.id, quizid=quiz.id))
+        except:
+            db.session.rollback()
+            flash('Hooooooly Guacamoooooleeeee... Something went wrong')
+        
+    return render_template('question_create.html', form=form, clase=clase, quiz=quiz)
+
+@app.route('/classes/detail/<int:classid>/quiz/<int:quizid>/question/<int:questionid>/answer/create', methods=['GET','POST'])
+def answer_create(classid, questionid, quizid):
+    clase = Class.query.get_or_404(classid)
+    quiz = Quiz.query.get_or_404(quizid)
+    question = Question.query.get_or_404(questionid)
+    right_exists = False
+
+    if len(question.answers) == 4:
+        return redirect(url_for('quiz_detail', classid=clase.id, quizid=quiz.id))
+    form = AnswerForm()
+    
+    for answer in question.answers:
+        if answer.isRight:
+            right_exists = True
+
+    if request.method == 'POST' and form.validate():
+        answer = Answer(content=form.content.data, isRight=form.isRight.data)
+        db.session.add(answer)
+        question.answers.append(answer)
+        db.session.commit()
+
+        try:
+            
+            flash('Answer Added Succesfully')
+            return redirect(url_for('answer_create', classid=clase.id, questionid=question.id, quizid=quiz.id))
+        except:
+            db.session.rollback()
+            flash('Hooooooly Guacamoooooleeeee... Something went wrong')
+        
+    return render_template('answer_create.html', form=form, clase=clase, question=question, quiz=quiz, right_exists=right_exists)
 
 # Custom Error Pages
 @app.errorhandler(404)

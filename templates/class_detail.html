@@ -37,17 +37,17 @@
     <div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
         <h1>Quizzes</h1>
         <hr>
-        {% if not clase.quizes[0] %}
+        {% if not clase.quizzes[0] %}
             <h4>It looks like there are no quizzes &#128526</h4>
         {% else %}
-            {% for quiz in clase.quizes %}
-                <a href="{{url_for('quiz_detail', id=quiz.id)}}">{{quiz.name}}</h3>
+            {% for quiz in clase.quizzes %}
+                <a href="{{url_for('quiz_detail', classid=clase.id, quizid=quiz.id)}}">{{quiz.name}}</h3>
             {% endfor %}
         {% endif %}
         
         {% if current_user.isTeacher %}
         <br>
-            <a class="btn btn-success" href="{{url_for('classes')}}">Add quiz</a>
+            <a class="btn btn-success" href="{{url_for('quiz_create', classid=clase.id)}}">Add quiz</a>
         {% endif %}
     </div> -->
             
@@ -105,10 +105,7 @@
         <hr>
         {% if not clase.forum.blogPosts[0] %}
                 <h4>Looks like the forum is empty &#128546</h4>
-<<<<<<< HEAD
 
-=======
->>>>>>> 6576b99b03fcf90400d57c08c62fd0784e8e0958
             {% else %}
                 {% for post in clase.forum.blogPosts %}
                     <h3>{{post.title}}</h3>
