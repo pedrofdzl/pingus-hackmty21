@@ -9,12 +9,16 @@ from flask_migrate import Migrate, current
 
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
+<<<<<<< HEAD
 
 from wtforms import StringField, SubmitField, PasswordField, BooleanField, IntegerField
 from wtforms.validators import DataRequired, EqualTo, ValidationError
+=======
+from wtforms import StringField, SubmitField, PasswordField, BooleanField
+from wtforms.validators import DataRequired, EqualTo
+>>>>>>> 67b47ac398ca16242c79d0247c35fee7f580537e
 from wtforms.widgets import TextArea
 from wtforms.ext.dateutil.fields import DateTimeField
-
 from sqlalchemy.orm import backref
 from sqlalchemy.ext.mutable import MutableList
 
@@ -381,7 +385,6 @@ def classes():
 def profile():
     return render_template('profile.html')
 
-
 @app.route('/logout')
 @login_required
 def logout():
@@ -503,6 +506,8 @@ def class_add(classid, studid):
 
     try:
         clase.users.append(user)
+        notification = Notification(name="You've been signed up to a new class!", subject="You are now part of the class: {{ clase.name }}", receivers=user)
+        db.session.add(notification)
         db.session.commit()
         flash('Student Added Succesfully')
     except:

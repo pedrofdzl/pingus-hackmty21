@@ -6,48 +6,49 @@
 
 {% block body %}
 <div class="mx-auto col-lg-8 px-0 my-5 text-left">
-    
-    {% for message in get_flashed_messages() %}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-        <strong>{{ message }}</strong>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    {% endfor %}
-      
-      <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-          <li class="breadcrumb-item"><a href="{{ url_for('classes') }}">Classes</a></li>
-          <li class="breadcrumb-item active" aria-current="page">{{ clase.name }}</li>
-        </ol>
-      </nav>
 
-    <h1 class="display-5 fw-bold lh-1 mb-3">{{clase.name}}</h1>
-    <hr>
+  {% for message in get_flashed_messages() %}
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <strong>{{ message }}</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endfor %}
+
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('classes') }}">Classes</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ clase.name }}</li>
+    </ol>
+  </nav>
+
+  <h1 class="display-5 fw-bold lh-1 mb-3">{{clase.name}}</h1>
+  <hr>
 
 
 
-    <h3>Add students</h3>
+  <h3>Add students</h3>
 
-    <form method="POST">
-        <input class="form-control" type="text" name="student" id="student" placeholder="Student name">
-        <br>
-        <input class="btn btn-primary py-0 float-start" type="submit" value="Submit">
-        <br>
-    </form>
+  <form method="POST">
+    <input class="form-control" type="text" name="student" id="student" placeholder="Student name">
     <br>
-    {% if students %}
-    
-    <ul class="list-group list-group">
-      {% for student in students %}
-      <li class="list-group-item">{{ student.firstName }} {{ student.lastName }}
-          {% if current_user.isTeacher %}
-          <a class="btn btn-success py-0 float-end" href="{{ url_for('class_add', classid=clase.id, studid=student.id) }}">Add</a>
-          {% endif %}
+    <input class="btn btn-primary py-0 float-start" type="submit" value="Submit">
+    <br>
+  </form>
+  <br>
+  {% if students %}
+
+  <ul class="list-group list-group">
+    {% for student in students %}
+    <li class="list-group-item">{{ student.firstName }} {{ student.lastName }}
+      {% if current_user.isTeacher %}
+      <a class="btn btn-success py-0 float-end"
+        href="{{ url_for('class_add', classid=clase.id, studid=student.id) }}">Add</a>
+      {% endif %}
   </ul>
   {% endfor %}
   {% endif %}
-    </div>
 </div>
-    
+</div>
+
 {% endblock %}

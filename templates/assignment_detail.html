@@ -49,6 +49,19 @@
 
                 {% endif %}
             </div>
-    </div>
+            {% endfor %}
+            <p>{{ assignment.description }}</p>
+            {% if current_user.isTeacher %}
+            <a class="btn btn-primary"
+                href="{{url_for('assignment_update', classid=clase.id, assid=assignment.id)}}">Edit assignment</a>
+            <a class="btn btn-danger"
+                href="{{url_for('assignment_delete', classid=clase.id, assid=assignment.id)}}">Delete assignment</a>
+            {% else %}
+            <!-- UPLOAD WORK -->
+            <a class="btn btn-success"
+                href="{{url_for('assignment_update', classid=clase.id, assid=assignment.id)}}">Upload assignment</a>
+            {% endif %}
+        </div>
+</div>
 
 {% endblock %}
