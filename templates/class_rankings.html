@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Class Detail</title>
+{% endblock %}
+
+{% block body %}
+<div class="mx-auto col-lg-8 px-0 my-5 text-left">
+
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>{{ message }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('classes') }}">Classes</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ clase.name }}</li>
+        </ol>
+    </nav>
+
+    <h1 class="display-5 fw-bold lh-1 mb-3">{{clase.name}} rankings</h1>
+    <hr>
+
+    {% for user in clase.users %}
+    {% if user.isTeacher %}
+    <h5>Teacher: {{ user.firstName }} {{ user.lastName }}</h5>
+    {% endif %}
+    {% endfor %}
+
+</div>
+{% for message in get_flashed_messages() %}
+<p><strong>{{ message }}</strong></p><br>
+{% endfor %}
+
+<div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
+    <h1>Top students</h1>
+    <hr>
+    <ol>
+        <li>
+            {% for user in users %}
+            {{ user.firstName }} {{ user.lastName }}
+            <b>&nbsp;&nbsp;&nbsp;&nbsp; Score: </b> {{ user.score }}
+            <br>
+            {% endfor %}
+        </li>
+    </ol>
+</div>
+
+{% endblock %}

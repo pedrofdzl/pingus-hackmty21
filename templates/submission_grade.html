@@ -7,7 +7,7 @@
 
 {% block body %}
     
-    <div class="container col-xl-10 col-xxl-8 px-4 py-5">
+    <div class="container col-xl-10 col-xxl-8 px-4 py-5 text-center">
     {%  for message in get_flashed_messages() %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
         <strong>{{ message }}</strong>
@@ -19,8 +19,9 @@
             <div class="col-md-10 mx-auto col-lg-5">
                 <form class="p-4 p-md-5 border rounded-3 bg-light" method="POST">
     
-                        <input type="number" name="grade" id="grade">
-                        <input type="submit" value="Grade">
+                        <input class="form-control" type="number" name="grade" id="grade">
+                        <br>
+                        <input class="btn btn-primary" type="submit" value="Grade">
                 </form>
             </div>
     </div>

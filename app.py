@@ -316,7 +316,7 @@ def user_create():
         try:
             db.session.add(user)
             db.session.commit()
-            flash('User Register')
+            flash('User Registered!')
             return redirect(url_for('welcome'))
         except:
             flash("Something went wrong")
@@ -366,6 +366,14 @@ def classes():
 @app.route('/profile')
 @login_required
 def profile():
+    sum = 0
+    for submission in current_user.submissions:
+        sum += submission.grade
+    current_user.score = sum
+    try:
+        db.session.commit()
+    except:
+        db.session.rollback()
     return render_template('profile.html')
 
 @app.route('/logout')
@@ -489,8 +497,6 @@ def class_add(classid, studid):
 
     try:
         clase.users.append(user)
-        notification = Notification(name="You've been signed up to a new class!", subject="You are now part of the class: {{ clase.name }}", receivers=user)
-        db.session.add(notification)
         db.session.commit()
         flash('Student Added Succesfully')
     except:
@@ -641,7 +647,7 @@ def assignment_detail(classid, assid):
     if current_user.isTeacher:
         submissions = Submission.query.filter_by(assignment_id=assignment.id).all()
 
-    return render_template('assignment_detail.html', clase=clase, assignment=assignment, submission=submission, submissions=submissions)
+    return render_template('assignment_detail.html', clase=clase, assignment=assignment, submission=submission, submissions=submissions, user=User)
 
 
 @app.route('/classes/detail/<int:classid>/assignment/delete/<int:assid>')
@@ -763,9 +769,6 @@ def submission_grade(classid, assid, subid):
     return render_template('submission_grade.html',  clase=clase, assignment=assignment, submission=submission)
 
 
-
-
-
 @app.route('/classes/detail/<int:classid>/forum/blogPost/create', methods=['GET','POST'])
 def blogPost_create(classid):
     clase = Class.query.get_or_404(classid)
@@ -831,6 +834,14 @@ def blogPost_detail(classid, postid):
     blogPost = BlogPost.query.get_or_404(postid)
 
     return render_template('class_detail.html', clase=clase)
+
+@app.route('/classes/detail/<int:classid>/rankings')
+def class_rankings(classid):
+    clase = Class.query.get_or_404(classid)
+    users = clase.users.filter_by(isTeacher = False).order_by(User.score.desc()).all()
+
+    return render_template('class_rankings.html', clase=clase, users = users)
+
 
 # Custom Error Pages
 @app.errorhandler(404)

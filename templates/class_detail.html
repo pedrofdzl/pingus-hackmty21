@@ -25,6 +25,8 @@
     <h1 class="display-5 fw-bold lh-1 mb-3">{{clase.name}}</h1>
     <hr>
     <a class="btn btn-primary float-xxl-end" href="{{ url_for('class_students', id=clase.id) }}">See students</a>
+    <p class="float-end">&nbsp;</p>
+    <a class="btn btn-warning float-xxl-end" href="{{ url_for('class_rankings', id=clase.id) }}">Rankings</a>
     {% for user in clase.users %}
     {% if user.isTeacher %}
     <h5>Teacher: {{ user.firstName }} {{ user.lastName }}</h5>

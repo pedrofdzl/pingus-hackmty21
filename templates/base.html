@@ -43,6 +43,8 @@
                                 Classes
                             </a>
                         </li>
+                        {% if current_user.isTeacher %}
+                        {% else %}
                         <li>
                             <a href="/grades" class="nav-link text-white">
                                 <!--<svg class="bi d-block mx-auto mb-1" width="24" height="24">
@@ -51,6 +53,7 @@
                                 Grades
                             </a>
                         </li>
+                        {% endif %}
                         <li>
                             <a href="/profile" class="nav-link text-white">
                                 <!--<svg class="bi d-block mx-auto mb-1" width="24" height="24">
