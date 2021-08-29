@@ -9,6 +9,7 @@ from flask_migrate import Migrate, current
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
 from sqlalchemy.ext.declarative import declarative_base
+
 from wtforms import StringField, SubmitField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, EqualTo
 from wtforms.widgets import TextArea
@@ -283,7 +284,7 @@ def welcome():
         if user:
             if user.verify_password(form.password.data):
                 login_user(user)
-                flash(f'Welcome back {user.firstName}!')
+                #flash(f'Welcome back {user.firstName}!')
                 return redirect(url_for('dashboard'))
             else:
                 flash('Hooooooly Guacamoooooleeeee... Something went wrong')

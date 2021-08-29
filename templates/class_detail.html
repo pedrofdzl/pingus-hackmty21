@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block body %}
+<<<<<<< HEAD
 <div class="container col-xl-10 col-xxl-8 px-4 py-5">
     <h2 class="display-4 fw-bold lh-1 mb-3 text-center">{{clase.name}}</h1>
         <br>
@@ -16,21 +17,39 @@
             </div>
             {% endfor %}
         </div>  
+=======
+<div class="mx-auto col-lg-8 px-0 my-5 text-left">
+    <h1 class="display-5 fw-bold lh-1 mb-3">{{clase.name}}</h1>
+    {% for user in clase.users %}
+        {% if user.isTeacher %}
+            <h5>Teacher: {{ user.firstName }} {{ user.lastName }}</h5>
+        {% endif %}
+    {% endfor %}
+>>>>>>> 7802410561023f395b347a068b88c805cd3d2f26
 </div>
-<div class="container col-xl-10 col-xxl-8 px-4 py-5">
-    <ul>
-        <li>
-            <h1>Quizes!</h1>
-            {% if not clase.quizes[0] %}
-                <h4>It looks like there are no quizzes &#128526</h4>
-            {% else %}
-                {% for quiz in clase.quizes %}
-                    <a href="{{url_for('quiz_detail', id=quiz.id)}}">{{quiz.name}}</h3>
-                {% endfor %}
-            {% endif %}
-        </li>
-        <li>
-            <h1>Assignments!</h1>
+    {% for message in get_flashed_messages() %}
+    <p><strong>{{ message }}</strong></p><br>
+    {% endfor %}
+    <div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
+        <h1>Quizzes</h1>
+        <hr>
+        {% if not clase.quizes[0] %}
+            <h4>It looks like there are no quizzes &#128526</h4>
+        {% else %}
+            {% for quiz in clase.quizes %}
+                <a href="{{url_for('quiz_detail', id=quiz.id)}}">{{quiz.name}}</h3>
+            {% endfor %}
+        {% endif %}
+        
+        {% if current_user.isTeacher %}
+        <br>
+            <a class="btn btn-success" href="{{url_for('classes')}}">Add quiz</a>
+        {% endif %}
+    </div>
+            
+    <div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
+            <h1>Assignments</h1>
+            <hr>
             {% if not clase.assignments[0] %}
                 <h4>It looks like there are no assignments &#128526</h4>
             {% else %}
@@ -38,10 +57,17 @@
                     <a href="{{url_for('quiz_detail', id=quiz.id)}}">{{quiz.name}}</h3>
                 {% endfor %}
             {% endif %}
-        </li>
-        <li>
-            <h1>Forum</h1>
-            {% if not clase.forum.blogPosts[0] %}
+
+            {% if current_user.isTeacher %}
+            <br>
+                <a class="btn btn-success" href="{{url_for('classes')}}">Add assignment</a>
+            {% endif %}
+    </div>
+
+    <div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
+        <h1>Forum</h1>
+        <hr>
+        {% if not clase.forum.blogPosts[0] %}
                 <h4>Looks like the forum is empty &#128546</h4>
                 <a href="{{url_for('blogPost_create', classid=clase.id)}}">Add Blog Post</h3>
             {% else %}
@@ -52,7 +78,7 @@
                 <small>Date: {{post.date}}</small>
                 {% endfor %}
             {% endif %}
-        </li>
+    </div>
         
     </ul>
 
