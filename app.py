@@ -42,7 +42,7 @@ db.session.commit()
 # Clases camelCase
 # todo lo demas snake_case
 class User(db.Model, UserMixin):
-    _id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(255), unique=True, nullable=False)
     firstName = db.Column(db.String(255), nullable=False)
     lastName = db.Column(db.String(255), nullable=False)
@@ -65,9 +65,6 @@ class User(db.Model, UserMixin):
 
     def verify_password(self, password):        
         return check_password_hash(self.passwordHash, password)
-
-    def get_id(self):
-        return self._id
 
 
     def __repr__(self) -> str:
@@ -176,12 +173,10 @@ class Answer(db.Model):
         return 'Answer ' + str(self.id) 
 
 
-
-
-
 ###############
 ### Forms ####
 #############
+
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(),])
     password = PasswordField('Password', validators=[DataRequired(),])
@@ -198,10 +193,13 @@ class RegisterForm(FlaskForm):
     submit = SubmitField('Create account')
 
 
+
 class QuizForm(FlaskForm):
     name = StringField('Quiz Name', validators=[DataRequired(),])
     description = StringField('Description', validators=[DataRequired(),])
-    date = DateTimeField('date')
+    date = DateTimeField('Date', validators=[DataRequired(),])
+
+
 
 ###################
 #### All routes ##
