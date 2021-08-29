@@ -9,10 +9,7 @@ from flask_migrate import Migrate, current
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
 from sqlalchemy.ext.declarative import declarative_base
-<<<<<<< HEAD
 
-=======
->>>>>>> 76d472d0f306a6a40b5de72825b268d2a8b69fc9
 from wtforms import StringField, SubmitField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, EqualTo
 from wtforms.widgets import TextArea
@@ -662,7 +659,7 @@ def blogPost_create(classid):
         
     return render_template('blogPost_create.html', form=form, clase=clase)
 
-@app.route('/classes/detail/<int:classid>/forum/blogPost/update/<int:postid>')
+@app.route('/classes/detail/<int:classid>/forum/blogPost/update/<int:postid>', methods=['GET','POST'])
 def blogPost_update(classid, postid):
     clase = Class.query.get_or_404(classid)
     blogPost = BlogPost.query.get_or_404(postid)
@@ -676,35 +673,35 @@ def blogPost_update(classid, postid):
         try:
             db.session.commit()
             flash('Blog Post Updated Succesfuly!')
-            return redirect('blogPost_detail', classid=clase.id, postid=blogPost.id)
+            return redirect(url_for('blogPost_detail', classid=clase.id, postid=blogPost.id))
         except:
             db.session.rollback()
             flash('Hooooooly Guacamoooooleeeee... Something went wrong')
         
-    return render_template('assignment_update.html')
+    return render_template('blogPost_update.html', form=form)
 
 @app.route('/classes/detail/<int:classid>/forum/blogPost/delete/<int:postid>')
 def blogPost_delete(classid, postid):
     clase = Class.query.get_or_404(classid)
-    blogPost = Lecture.query.get_or_404(postid)
+    blogPost = BlogPost.query.get_or_404(postid)
 
     try:
         db.session.delete(blogPost)
         db.session.commit()
         flash('Blog Post Deleted Succesfuly!')
-        return redirect(url_for('forum_detail', classid=clase.id))
+        return redirect(url_for('class_detail', id=clase.id))
     except:
         db.session.rollback()
         flash('Hooooooly Guacamoooooleeeee... Something went wrong')
 
-    return redirect(url_for('blogPost_detail', classid=clase.id, postid=blogPost.id))
+    return redirect(url_for('class_detail', id=clase.id))
 
 @app.route('/classes/detail/<int:classid>/forum/blogPost/detail/<int:postid>')
 def blogPost_detail(classid, postid):
     clase = Class.query.get_or_404(classid)
     blogPost = BlogPost.query.get_or_404(postid)
 
-    return render_template('blogPost_detail.html', clase=clase, blogPost=blogPost)
+    return render_template('class_detail.html', clase=clase)
 
 # Custom Error Pages
 @app.errorhandler(404)
