@@ -1,4 +1,4 @@
-from re import L
+from re import L, sub
 from flask import Flask, render_template, redirect, flash, url_for, request
 from datetime import datetime
 
@@ -239,6 +239,7 @@ class ClaseForm(FlaskForm):
 class QuizForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(),])
     description = StringField('Descriptoin', validators=[DataRequired(),], widgets=TextArea())
+    submit = SubmitField('Submit')
 
 
 # class Question(db.Model):
@@ -250,6 +251,7 @@ class QuizForm(FlaskForm):
 
 class QuestionForm(FlaskForm):
     content = StringField('Content', validators=[DataRequired(),], widgets=TextArea())
+    submit = SubmitField('Submit')
 
 # class Answer(db.Model):
 #     id = db.Column(db.Integer, nullable=False, primary_key=True)
@@ -257,6 +259,7 @@ class QuestionForm(FlaskForm):
     # question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
 class AnswerForm(FlaskForm):
     content = StringField('Content', validators=[DataRequired(),], widgets=TextArea())
+    submit = SubmitField('Submit')
 
 
 # class Assignment(db.Model):
@@ -271,6 +274,7 @@ class AssignmentForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(),])
     description = StringField('Description', validators=[DataRequired(),])
     datePublished = DateTimeField('Due Date', validators=[DataRequired(),])
+    submit = SubmitField('Submit')
     
 
 # class Lecture(db.Model):
@@ -283,6 +287,7 @@ class AssignmentForm(FlaskForm):
 class LectureForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(),])
     content = StringField('Content', validators=[DataRequired(),], widgets=TextArea())
+    submit = SubmitField('Submit')
 
 
 # class Forum(db.Model):
@@ -293,6 +298,7 @@ class LectureForm(FlaskForm):
 
 class ForumForm(FlaskForm):
     name = StringField('name', validators=[DataRequired(),])
+    submit = SubmitField('Submit')
 
 
 # class BlogPost(db.Model):
@@ -307,6 +313,7 @@ class ForumForm(FlaskForm):
 class BlogPostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired(),])
     content = StringField('Content', validators=[DataRequired(),], widgets=TextArea())
+    submit = SubmitField('Submit')
 
 
 
@@ -442,7 +449,7 @@ def class_create():
 
     return render_template('class_create.html', form=form)
 
-@app.route('/classes/update/<int:id>')
+@app.route('/classes/update/<int:id>', methods=['GET', 'POST'])
 def class_update(id):
     
     clase = Class.query.get_or_404(id)
@@ -462,7 +469,7 @@ def class_update(id):
     return render_template('class_update.html', form=form)
         
 
-@app.route('/classes/delete/<int:id>')
+@app.route('/classes/delete/<int:id>', methods=['GET', 'POST'])
 def class_delete(id):
     clase = Class.query.get_or_404(id)
 
@@ -483,11 +490,71 @@ def class_detail(id):
 
     return render_template('class_detail.html', clase=clase)
 
-# # Lectures
-# @app.route('/lecture')
-# def lecture_register():
+# Lectures
+@app.route('/classses/detail/<int:classid>/lecture/create', methods=['GET', 'POST'])
+def lecture_create(classid):
 
-#     form
+    clase = Class.query.get_or_404(classid)
+    form = LectureForm()
+
+    if request.method == 'POST' and form.validate():
+        lecture = Lecture(name=form.name.data, content=form.content.data)
+        lecture.class_id = clase.id
+
+        try:
+            db.session.add(lecture)
+            db.session.commit()
+            flash('Lecutre Created Succesfully!')
+        except:
+            flash('Hooooooly Guacamoooooleeeee... Something went wrong')
+
+    return render_template('lecture.html', form=form, clase=clase)
+
+
+@app.route('/classes/detail/<int:classid>/lecture/update/<int:lectid>', methods=['GET', 'POST'])
+def lecture_update(classid, lectid):
+
+    clase = Class.query.get_or_404(classid)
+    lecture = Lecture.query.get_or_404(lectid)
+
+    form = LectureForm(request.form, obj=lecture)
+
+    if request.method == 'POST' and form.validate():
+        lecture.name = form.name.data
+        lecture.content = form.content.data
+
+        try:
+            db.session.commit()
+            flash('Lecture Update Succesfuly!')
+        except:
+            flash('Hooooooly Guacamoooooleeeee... Something went wrong')
+    
+    return render_template('lecture_update.html', form=form, clase=clase)
+
+
+@app.route('/classes/detail/<int:classid>/lecture/delete/<int:lectid>')
+def lecture_delete(classid, lectid):
+    clase = Class.query.get_or_404(classid)
+    lecture = Lecture.query.get_or_404(lectid)
+
+    try:
+        db.session.delete(lecture)
+        db.session.commit()
+        flash('Lecture Delete Succesfuly!')
+        return redirect(url_for('class_detail', classid=clase.id))
+    except:
+        db.session.rollback()
+        flash('Hooooooly Guacamoooooleeeee... Something went wrong')
+
+    return redirect(url_for('lecture_detail', classid=classid, lectid=lectid))
+
+
+@app.route('/classes/detail/<int:classid>/lecture/detail/<int:lectid>')
+def lecture_detail(classid, lectid):
+    clase = Class.query.get_or_404(classid)
+    lecture = Lecture.query.get_or_404(lectid)
+    
+    return render_template('lecture_detail.html', clase=clase, lecture=lecture)
 
 
 
