@@ -9,10 +9,7 @@ from flask_migrate import Migrate, current
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
 from sqlalchemy.ext.declarative import declarative_base
-<<<<<<< HEAD
-=======
 
->>>>>>> b32d089672f41b8da949bdcc8188536ead06573b
 from wtforms import StringField, SubmitField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, EqualTo
 from wtforms.widgets import TextArea
@@ -50,8 +47,8 @@ db.session.commit()
 # Clases camelCase
 
 users = db.Table('users',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('class_id', db.ForeignKey('class.id'))
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('class_id', db.ForeignKey('class.id'), primary_key=True)
 )
 
 class User(db.Model, UserMixin):
@@ -66,8 +63,8 @@ class User(db.Model, UserMixin):
     score = db.Column(db.Integer, default=0)
     isTeacher = db.Column(db.Boolean, default=False)
     dateJoined = db.Column(db.DateTime)
-    blogPost_id = db.Column(db.Integer, db.ForeignKey('blogpost.id'))
-    blogPosts = db.relationship('BlogPost', backref='owner_user', uselist=True)
+    blogPosts = db.relationship('BlogPost', backref='owner_user', overlaps="blogPosts,owner_user")
+    submissions = db.relationship('Submission', backref='owner_user', uselist=True)
     notification_id = db.Column(db.Integer, db.ForeignKey('notification.id'))
 
     @property
@@ -128,6 +125,7 @@ class Assignment(db.Model):
     description = db.Column(db.Text, nullable=False)
     datePublished = db.Column(db.DateTime, nullable=False, default=datetime.today)
     dateDue = db.Column(db.DateTime, nullable=False, default=datetime.today)
+    submissions = db.relationship('Submission', backref='owner_assignment', uselist=True)
     class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
 
     def __repr__(self):
@@ -159,7 +157,8 @@ class BlogPost(db.Model):
     title = db.Column(db.String(255))
     content = db.Column(db.Text, nullable=False)
     date = db.Column(db.DateTime, nullable=False, default=datetime.today)
-    user = db.relationship('User', backref='owner_BlogPost')
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User', backref='owner_BlogPost', overlaps="blogPosts,owner_user")
     forum_id = db.Column(db.Integer, db.ForeignKey('forum.id'))
 
     def __repr__(self):
@@ -189,6 +188,15 @@ class Answer(db.Model):
 
     def __repr__(self):
         return 'Answer ' + str(self.id) 
+
+class Submission(db.Model):
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    grade = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'))
+
+
 
 
 ###############
