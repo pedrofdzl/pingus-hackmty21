@@ -8,14 +8,46 @@
 
 {% block body %}
 
-<div class="container col-xl-10 col-xxl-8 px-4 py-5">
-    <h2 class="display-4 fw-bold lh-1 mb-3 text-center">Assignment: {{ assignment.name }}</h1>
-        <hr>
-        <div class="col-md-10 mx-auto col-lg-8">
-            {% for message in get_flashed_messages() %}
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <strong>{{ message }}</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div class="container col-xl-10 col-xxl-8 px-4 py-5">
+        <h2 class="display-4 fw-bold lh-1 mb-3 text-center">Assignment: {{ assignment.name }}</h1>
+            <hr>
+            <div class="col-md-10 mx-auto col-lg-8">
+                {% for message in get_flashed_messages() %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>{{ message }}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                <p>{{ assignment.description }}</p>
+                {% if current_user.isTeacher %}
+                <a class="btn btn-primary" href="{{url_for('assignment_update', classid=clase.id, assid=assignment.id)}}">Edit assignment</a>
+                <a class="btn btn-danger" href="{{url_for('assignment_delete', classid=clase.id, assid=assignment.id)}}">Delete assignment</a>
+
+                <h3>Assignments</h3>
+                <hr>
+                {% if submissions %}
+
+                    {% for sub in submissions %}
+                        <p><strong>User: <a href="{{ url_for('submission_detail', classid=clase.id, assid=assignment.id, subid=sub.id) }}">
+                            {{ sub.user_id }}</a>
+                            {% if sub.grade %}
+                            Grade: {{ sub.grade }}
+                            {% endif %}
+                        </strong></p>
+                    
+                    {% endfor %}
+                {% endif %}
+
+                {% else %}
+                <!-- UPLOAD WORK -->
+                    {% if submission %}
+                    <h5>Already Submited -- <a href="{{ url_for('submission_detail', classid=clase.id, assid=assignment.id, subid=submission.id)}}">Review Submission</a></h5>
+
+                    {% else %}
+                    <a class="btn btn-success" href="{{url_for('submission_upload', classid=clase.id, assid=assignment.id)}}">Upload Submission</a>
+                    {% endif %}
+
+                {% endif %}
             </div>
             {% endfor %}
             <p>{{ assignment.description }}</p>

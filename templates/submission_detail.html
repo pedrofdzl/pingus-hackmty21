@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+
+{% block head %}
+<title>Submission</title>
+{% endblock %}
+
+
+{% block body %}
+
+    <div class="container col-xl-10 col-xxl-8 px-4 py-5">
+        <h2 class="display-4 fw-bold lh-1 mb-3 text-center">Assignment: {{ assignment.name }} - Submission</h1>
+            <hr>
+            <div class="col-md-10 mx-auto col-lg-8">
+                {% for message in get_flashed_messages() %}
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>{{ message }}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+                <p>{{ submission.content }}</p>
+                <p>Author: {{ author.firstName }}</p>
+                {% if submission.grade %}
+                <p> Grade: {{ submission.grade }}</p>
+                {% endif %}
+
+
+                {% if current_user.isTeacher %}
+                <a class="btn btn-primary" href="{{ url_for('submission_grade',classid=clase.id, assid=assignment.id, subid=submission.id ) }}">Grade</a>
+                {% else %}
+                <a href="{{ url_for('submission_update',classid=clase.id, assid=assignment.id, subid=submission.id) }}">Editar</a>
+                <a href="{{ url_for('submission_delete' ,classid=clase.id, assid=assignment.id, subid=submission.id) }}">Eliminar</a>
+
+                {% endif %}
+            </div>
+    </div>
+
+{% endblock %}
