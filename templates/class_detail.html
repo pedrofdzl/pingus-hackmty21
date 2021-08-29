@@ -23,18 +23,19 @@
       </nav>
 
     <h1 class="display-5 fw-bold lh-1 mb-3">{{clase.name}}</h1>
+    <hr>
+    <a class="btn btn-primary float-xxl-end" href="{{ url_for('class_students', id=clase.id) }}">See students</a>
     {% for user in clase.users %}
         {% if user.isTeacher %}
             <h5>Teacher: {{ user.firstName }} {{ user.lastName }}</h5>
         {% endif %}
     {% endfor %}
-
-    <a href="{{ url_for('class_students', id=clase.id) }}">See Students</a>
+    
 </div>
-
-
-
-    <div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
+    {% for message in get_flashed_messages() %}
+    <p><strong>{{ message }}</strong></p><br>
+    {% endfor %}
+    <!-- <div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
         <h1>Quizzes</h1>
         <hr>
         {% if not clase.quizes[0] %}
@@ -111,14 +112,11 @@
                     <small>Created by: {{post.user.firstName}} {{post.user.lastName}}</small>
                     <small>Date: {{post.date}}</small>
                     <p>{{post.content}}</p>
+                    <a href="{{url_for('blogPost_delete', classid=clase.id, postid=post.id)}}">Delete</a>
                 {% endfor %}
             {% endif %}
             <br>
                 <a class="btn btn-success" href="{{url_for('blogPost_create', classid=clase.id)}}">Add post</a>
     </div>
-        
-    </ul>
-
-</div>
     
 {% endblock %}

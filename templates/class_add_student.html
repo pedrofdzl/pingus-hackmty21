@@ -23,29 +23,30 @@
       </nav>
 
     <h1 class="display-5 fw-bold lh-1 mb-3">{{clase.name}}</h1>
-    {% for user in clase.users %}
-        {% if user.isTeacher %}
-            <h5>Teacher: {{ user.firstName }} {{ user.lastName }}</h5>
-        {% endif %}
-    {% endfor %}
+    <hr>
 
 
-    <h3>students</h3>
+
+    <h3>Add students</h3>
 
     <form method="POST">
-        <input type="text" name="student" id="student" placeholder="student">
-        <input type="submit" value="submit">
+        <input class="form-control" type="text" name="student" id="student" placeholder="Student name">
+        <br>
+        <input class="btn btn-primary py-0 float-start" type="submit" value="Submit">
+        <br>
     </form>
-
+    <br>
     {% if students %}
-
-    {% for student in students %}
-    <h5>{{ student.firstName }}</h5>
-    <a href="{{ url_for('class_add', classid=clase.id, studid=student.id) }}">add</a>
-
-    {% endfor %}
-    {% endif %}
-
+    
+    <ul class="list-group list-group">
+      {% for student in students %}
+      <li class="list-group-item">{{ student.firstName }} {{ student.lastName }}
+          {% if current_user.isTeacher %}
+          <a class="btn btn-success py-0 float-end" href="{{ url_for('class_add', classid=clase.id, studid=student.id) }}">Add</a>
+          {% endif %}
+  </ul>
+  {% endfor %}
+  {% endif %}
     </div>
 </div>
     
