@@ -8,14 +8,14 @@
 {% endblock %}
 
 {% block body %}
-<div class="container col-xl-10 col-xxl-8 px-4 py-5">
-
-    <h1 class="display-5 fw-bold lh-1 mb-3">Classes</h1>
-    
+<div class="mx-auto col-lg-8 px-0 my-5 text-left">
+    <h1 class="display-5 fw-bold lh-1 mb-3">Your classes</h1>
     {% if current_user.isTeacher %}
         <ul class="list-group">
             {% for class in lista %}
-            <li class="list-group-item"><a style="color: #2d2b2f; font-size: 18px"  class="fw-bold lh-1 mb-3" href="{{url_for('class_detail', id=class.id)}}">{{class.name}}</a></li>
+            <li class="list-group-item"><a style="color: #2d2b2f; font-size: 24px"  class="fw-bold lh-1 mb-3" href="{{url_for('class_detail', id=class.id)}}">{{class.name}}</a>
+            </li>
+            <span class="badge badge-primary badge-pill">14</span>
             {% endfor %}
         </ul>
         <br>
@@ -24,9 +24,13 @@
                 <button type="submit" class="btn btn-success" style="align-self: center;">Add class</button>
             </form>
         </div>
+    {% else %}
+        <ul class="list-group">
+            {% for class in lista %}
+            <li class="list-group-item"><a style="color: #2d2b2f; font-size: 18px"  class="fw-bold lh-1 mb-3" href="{{url_for('class_detail', id=class.id)}}">{{class.name}}</a></li>
+            {% endfor %}
+        </ul>
+        <br>
     {% endif %}
-    {% for message in get_flashed_messages() %}
-    <p class="align-self-center"><strong>{{ message }}</strong></p>
-    {% endfor %}
 </div>
 {% endblock %}

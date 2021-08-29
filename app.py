@@ -342,7 +342,7 @@ def welcome():
         if user:
             if user.verify_password(form.password.data):
                 login_user(user)
-                flash(f'Welcome back {user.firstName}!')
+                #flash(f'Welcome back {user.firstName}!')
                 return redirect(url_for('dashboard'))
             else:
                 flash('Hooooooly Guacamoooooleeeee... Something went wrong')
