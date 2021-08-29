@@ -1,14 +1,17 @@
+from re import L
 from flask import Flask, render_template, redirect, flash, url_for, request
 from datetime import datetime
 
 # DB dependencies
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from flask_migrate import Migrate, current
 
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField, DateTimeField, BooleanField
+from wtforms import widgets
 from wtforms.validators import DataRequired, EqualTo
+from wtforms.widgets import TextArea
 
 
 from sqlalchemy.orm import backref
@@ -193,11 +196,103 @@ class RegisterForm(FlaskForm):
     submit = SubmitField('Create account')
 
 
+# class Class(db.Model):
+#     id = db.Column(db.Integer, nullable=False, primary_key=True)
+#     name = db.Column(db.String(255), nullable=False)
+#     quizes = db.relationship('Quiz', backref='owner_class')
+#     assignments = db.relationship('Assignment', backref='owner_class')
+#     forum = db.relationship('Forum', backref='owner_class')
+#     lectures = db.relationship('Lecture', backref='owner_class')
+
+#     def __repr__(self):
+#         return 'Class ' + str(self.id) 
+
+class ClaseForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired(message='Name is Required'),])
+    
+
+# class Quiz(db.Model):
+#     id = db.Column(db.Integer, nullable=False, primary_key=True)
+#     name = db.Column(db.String(255), nullable=False)
+#     description = db.Column(db.Text, nullable=False)
+#     date = db.Column(db.DateTime, nullable=False, default=datetime.today)
+#     questions = db.relationship('Question', backref='owner_quiz')
+#     class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
 
 class QuizForm(FlaskForm):
-    name = StringField('Quiz Name', validators=[DataRequired(),])
+    name = StringField('Name', validators=[DataRequired(),])
+    description = StringField('Descriptoin', validators=[DataRequired(),], widgets=TextArea())
+
+
+# class Question(db.Model):
+#     id = db.Column(db.Integer, nullable=False, primary_key=True)
+#     content = db.Column(db.String(255), nullable=False)
+#     weight = db.Column(db.Float, nullable=False)
+#     answers = db.relationship('Answer', backref='owner_question')
+#     quiz_id = db.Column(db.Integer, db.ForeignKey('quiz.id'))
+
+class QuestionForm(FlaskForm):
+    content = StringField('Content', validators=[DataRequired(),], widgets=TextArea())
+
+# class Answer(db.Model):
+#     id = db.Column(db.Integer, nullable=False, primary_key=True)
+#     content = db.Column(db.Text, nullable=False)
+    # question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
+class AnswerForm(FlaskForm):
+    content = StringField('Content', validators=[DataRequired(),], widgets=TextArea())
+
+
+# class Assignment(db.Model):
+#     id = db.Column(db.Integer, nullable=False, primary_key=True)
+#     name = db.Column(db.String(255), nullable=False)
+#     description = db.Column(db.Text, nullable=False)
+#     datePublished = db.Column(db.DateTime, nullable=False, default=datetime.today)
+#     dateDue = db.Column(db.DateTime, nullable=False, default=datetime.today)
+#     class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
+
+class AssignmentForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired(),])
     description = StringField('Description', validators=[DataRequired(),])
-    date = DateTimeField('Date', validators=[DataRequired(),])
+    datePublished = DateTimeField('Due Date', validators=[DataRequired(),])
+    
+
+# class Lecture(db.Model):
+#     id = db.Column(db.Integer, nullable=False, primary_key=True)
+#     name = db.Column(db.String(255), nullable=False)
+#     content = db.Column(db.Text, nullable=False)
+#     date = db.Column(db.DateTime, nullable=False, default=datetime.today)
+#     class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
+
+class LectureForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired(),])
+    content = StringField('Content', validators=[DataRequired(),], widgets=TextArea())
+
+
+# class Forum(db.Model):
+#     id = db.Column(db.Integer, nullable=False, primary_key=True)
+#     name = db.Column(db.String(255), nullable=False)
+#     blogPosts = db.relationship('BlogPost', backref='owner_forum')
+#     class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
+
+class ForumForm(FlaskForm):
+    name = StringField('name', validators=[DataRequired(),])
+
+
+# class BlogPost(db.Model):
+#     __tablename__ = 'blogpost'
+#     id = db.Column(db.Integer, nullable=False, primary_key=True)
+#     title = db.Column(db.String(255))
+#     content = db.Column(db.Text, nullable=False)
+#     user = db.relationship('User', backref='owner_blogpost')
+#     date = db.Column(db.DateTime, nullable=False, default=datetime.today)
+#     forum_id = db.Column(db.Integer, db.ForeignKey('forum.id'))
+
+class BlogPostForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired(),])
+    content = StringField('Content', validators=[DataRequired(),], widgets=TextArea())
+
+
+
 
 
 
@@ -226,9 +321,9 @@ def welcome():
                 flash(f'Welcome back {user.firstName}!')
                 return redirect(url_for('dashboard'))
             else:
-                flash('Something went wrong')
+                flash('Hooooooly Guacamoooooleeeee... Something went wrong')
         else:
-            flash('Something went wrong')
+            flash('Hooooooly Guacamoooooleeeee... Something went wrong')
 
     return render_template('welcome.html', form=form)
 
@@ -274,8 +369,68 @@ def profile():
 def logout():
     logout_user()
     flash('You\'ve logout')
-
     return redirect(url_for('index'))
+
+@app.route('/classes/register', methods=['GET', 'POST'])
+def class_create():
+    form = ClaseForm()
+    
+    if request.method == 'POST' and form.validate():
+        clase = Class(name=form.name.data)
+
+        try:
+            db.session.add(clase)
+            db.session.commit()
+
+            flash('Class Registered Succesfuly!')
+        except:
+            flash('Hooooooly Guacamoooooleeeee... Something went wrong')
+
+
+    return render_template('class_create.html', form=form)
+
+@app.route('classes/update/<int:id>')
+def class_update(id):
+    
+    clase = Class.query.get_or_404(id)
+
+    form = ClaseForm(request.form, obj=clase)
+
+    if request.method == 'POST' and form.validate():
+        clase.name = form.name.data
+    
+        try:
+            db.session.commit()
+            flash('Class Updated Succesfully!')
+        except:
+            flash('Hooooooly Guacamoooooleeeee... Something went wrong')
+
+    return render_template('class_update.html')
+        
+
+@app.route('classes/delete/<int:id>')
+def class_delete(id):
+    clase = Class.query.get_or_404(id)
+
+    try:
+        db.session.delete(clase)
+        db.session.commit()
+        flash('Class Deleted Succesfully!')
+
+    except:
+        flash('Hooooooly Guacamoooooleeeee... Something went wrong')
+
+    return redirect(url_for(''))
+    
+
+
+# # Lectures
+# @app.route('/lecture')
+# def lecture_register():
+
+#     form
+
+
 
 
 # Custom Error Pages
