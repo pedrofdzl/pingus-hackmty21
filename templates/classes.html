@@ -5,5 +5,19 @@
 {% endblock %}
 
 {% block body %}
+    {% for message in get_flashed_messages() %}
+    <p><strong>{{ message }}</strong></p><br>
+    {% endfor %}
+    
+    {% if current_user.isTeacher %}
+        {% for class in users.query.filter_by(current_user.id) %}
+        <h>Hola</h>
+        <ul>
+            <li>
+                {{class.name}}
+            </li>
+        </ul>
+        {% endfor %}
+    {% endif %}
 
 {% endblock %}
