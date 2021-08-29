@@ -19,10 +19,14 @@
                 </div>
                 {% endfor %}
                 <p>{{ submission.content }}</p>
+                <p>Author: {{ author.firstName }}</p>
+                {% if submission.grade %}
+                <p> Grade: {{ submission.grade }}</p>
+                {% endif %}
 
 
                 {% if current_user.isTeacher %}
-                <a class="btn btn-primary" href="">Grade</a>
+                <a class="btn btn-primary" href="{{ url_for('submission_grade',classid=clase.id, assid=assignment.id, subid=submission.id ) }}">Grade</a>
                 {% else %}
                 <a href="{{ url_for('submission_update',classid=clase.id, assid=assignment.id, subid=submission.id) }}">Editar</a>
                 <a href="{{ url_for('submission_delete' ,classid=clase.id, assid=assignment.id, subid=submission.id) }}">Eliminar</a>

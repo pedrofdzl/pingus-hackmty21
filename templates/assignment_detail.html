@@ -22,6 +22,22 @@
                 {% if current_user.isTeacher %}
                 <a class="btn btn-primary" href="{{url_for('assignment_update', classid=clase.id, assid=assignment.id)}}">Edit assignment</a>
                 <a class="btn btn-danger" href="{{url_for('assignment_delete', classid=clase.id, assid=assignment.id)}}">Delete assignment</a>
+
+                <h3>Assignments</h3>
+                <hr>
+                {% if submissions %}
+
+                    {% for sub in submissions %}
+                        <p><strong>User: <a href="{{ url_for('submission_detail', classid=clase.id, assid=assignment.id, subid=sub.id) }}">
+                            {{ sub.user_id }}</a>
+                            {% if sub.grade %}
+                            Grade: {{ sub.grade }}
+                            {% endif %}
+                        </strong></p>
+                    
+                    {% endfor %}
+                {% endif %}
+
                 {% else %}
                 <!-- UPLOAD WORK -->
                     {% if submission %}

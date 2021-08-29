@@ -628,10 +628,14 @@ def assignment_update(classid, assid):
 def assignment_detail(classid, assid):
     clase = Class.query.get_or_404(classid)
     assignment = Assignment.query.get_or_404(assid)
+    submissions = None
 
     submission = Submission.query.filter_by(user_id=current_user.id, assignment_id=assignment.id).first()
 
-    return render_template('assignment_detail.html', clase=clase, assignment=assignment, submission=submission)
+    if current_user.isTeacher:
+        submissions = Submission.query.filter_by(assignment_id=assignment.id).all()
+
+    return render_template('assignment_detail.html', clase=clase, assignment=assignment, submission=submission, submissions=submissions)
 
 
 @app.route('/classes/detail/<int:classid>/assignment/delete/<int:assid>')
@@ -682,7 +686,9 @@ def submission_detail(classid, assid, subid):
     assignment = Assignment.query.get_or_404(assid)
     submission = Submission.query.get_or_404(subid)
 
-    return render_template('submission_detail.html', clase=clase, assignment=assignment, submission=submission)
+    author = User.query.get_or_404(submission.user_id)
+
+    return render_template('submission_detail.html', clase=clase, assignment=assignment, submission=submission, author=author)
 
 
 @app.route('/classes/detail/<int:classid>/assignment/detail/<int:assid>/submission/<int:subid>/update', methods=['GET', 'POST'])
@@ -724,6 +730,33 @@ def submission_delete(classid, assid, subid):
         flash('Hooooooly Guacamoooooleeeee... Something went wrong')
 
     return redirect(url_for('assignment_detail', classid=clase.id, assid=assignment.id))
+
+
+@app.route('/classes/detail/<int:classid>/assignment/detail/<int:assid>/submission/<int:subid>/grade', methods=['GET', 'POST'])
+def submission_grade(classid, assid, subid):
+    clase = Class.query.get_or_404(classid)
+    assignment = Assignment.query.get_or_404(assid)
+    submission = Submission.query.get_or_404(subid)
+
+    grade = None
+
+    if request.method == 'POST':
+        grade = request.form['grade']
+
+        submission.grade = grade
+
+        try:
+            db.session.commit()
+            flash('Assignment Graded Succesfully')
+            return redirect(url_for('assignment_detail', classid=clase.id, assid=assignment.id))
+
+        except:
+            db.session.rollback()
+            flash('Hooooooly Guacamoooooleeeee... Something went wrong')
+    
+    return render_template('submission_grade.html',  clase=clase, assignment=assignment, submission=submission)
+
+
 
 
 
