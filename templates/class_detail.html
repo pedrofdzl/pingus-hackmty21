@@ -35,22 +35,22 @@
 {% for message in get_flashed_messages() %}
 <p><strong>{{ message }}</strong></p><br>
 {% endfor %}
-<!-- <div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
-        <h1>Quizzes</h1>
-        <hr>
-        {% if not clase.quizzes[0] %}
-            <h4>It looks like there are no quizzes &#128526</h4>
-        {% else %}
-            {% for quiz in clase.quizzes %}
-                <a href="{{url_for('quiz_detail', classid=clase.id, quizid=quiz.id)}}">{{quiz.name}}</h3>
-            {% endfor %}
-        {% endif %}
+<div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
+    <h1>Quizzes</h1>
+    <hr>
+    {% if not clase.quizzes[0] %}
+        <h4>It looks like there are no quizzes &#128526</h4>
+    {% else %}
+        {% for quiz in clase.quizzes %}
+            <a href="{{url_for('quiz_detail', classid=clase.id, quizid=quiz.id)}}">{{quiz.name}}</h3>
+        {% endfor %}
+    {% endif %}
         
-        {% if current_user.isTeacher %}
+    {% if current_user.isTeacher %}
         <br>
-            <a class="btn btn-success" href="{{url_for('quiz_create', classid=clase.id)}}">Add quiz</a>
-        {% endif %}
-    </div> -->
+        <a class="btn btn-success" href="{{url_for('quiz_create', classid=clase.id)}}">Add quiz</a>
+    {% endif %}
+</div> 
 
 <div class="col-md-10 mx-auto col-lg-8 px-4 py-4 my-5 text-left bg-light rounded-3 border">
     <h1>Lectures</h1>

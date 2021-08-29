@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Answers</title>
+{% endblock %}
+
+{% block body %}
+<div class="container col-xl-10 col-xxl-8 px-4 py-5">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>{{ message }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    
+    <form method='POST'>
+        <ol>
+            {% for i in q %}
+                <li>{{i.content}}</li>
+                {% for j in o[i] %}
+                    <input type='radio' value='{{j}}' name='{{i}}' />{{j.content}}
+                {% endfor %}
+            {% endfor %}
+        </ol>
+        <input type="submit" value="submit" />
+    </form>
+</div>
+{% endblock %}
