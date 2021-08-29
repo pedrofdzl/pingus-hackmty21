@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+
+{% block head %}
+<title>Assignment</title>
+{% endblock %}
+
+
+{% block body %}
+    <h1>Assignment: {{ assignment.name }}</h1>
+    <hr>
+
+    <p>{{ assignment.description }}</p>
+
+    <span>
+        <a href="{{url_for('assignment_update', classid=clase.id, assid=assignment.id)}}">Edit Lecture</a>
+        <a href="{{url_for('assignment_delete', classid=clase.id, assid=assignment.id)}}">Delete Lecture</a>
+    </span>
+
+
+{% endblock %}
