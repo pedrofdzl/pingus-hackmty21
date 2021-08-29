@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Questions</title>
+{% endblock %}
+
+{% block body %}
+<div class="container col-xl-10 col-xxl-8 px-4 py-5">
+    {% for message in get_flashed_messages() %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>{{ message }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+          <li class="breadcrumb-item"><a href="{{ url_for('classes') }}">Classes</a></li>
+          <li class="breadcrumb-item"><a href="{{ url_for('quiz_detail', classid=clase.id, quizid=quiz.id) }}">Quizzes</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Create Question</li>
+        </ol>
+      </nav>
+
+    <h2 class="display-4 fw-bold lh-1 mb-3 text-center">Create New Question</h1>
+        <br>
+        <div class="col-md-10 mx-auto col-lg-5">
+            <form class="p-4 p-md-5 border rounded-3 bg-light" method="POST">
+
+                    {{ form.hidden_tag() }}
+
+                <div class="form-floating mb-3">
+                    {{ form.content(class="form-control", id="floatingInput", placeholder="Content of the Question") }}
+                    <!-- <input type="username" class="form-control" id="floatingInput" placeholder="username"> -->
+                    {{ form.content.label() }}
+                    <!-- <label for="floatingInput">Username</label> -->
+                </div>
+                {{ form.submit(class="w-100 btn btn-lg btn-success") }}
+                <!-- <button class="w-100 btn btn-lg btn-primary" type="submit">Create account</button> -->
+            </form>
+        </div>
+</div>
+{% endblock %}
