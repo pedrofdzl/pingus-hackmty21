@@ -219,6 +219,7 @@ class RegisterForm(FlaskForm):
 
 class ClaseForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(message='Name is Required'),])
+    submit = SubmitField('Create Class')
     
 
 # class Quiz(db.Model):
@@ -378,7 +379,7 @@ def profile():
 @login_required
 def logout():
     logout_user()
-    flash('You\'ve logout')
+    flash('You\'ve logged out')
     return redirect(url_for('index'))
 
 @app.route('/classes/register', methods=['GET', 'POST'])
@@ -390,16 +391,18 @@ def class_create():
 
         try:
             db.session.add(clase)
+            clase.users.append(current_user)
             db.session.commit()
 
             flash('Class Registered Succesfuly!')
+            return redirect(url_for('classes'))
         except:
             flash('Hooooooly Guacamoooooleeeee... Something went wrong')
 
 
     return render_template('class_create.html', form=form)
 
-@app.route('classes/update/<int:id>')
+@app.route('/classes/update/<int:id>')
 def class_update(id):
     
     clase = Class.query.get_or_404(id)
@@ -415,10 +418,10 @@ def class_update(id):
         except:
             flash('Hooooooly Guacamoooooleeeee... Something went wrong')
 
-    return render_template('class_update.html')
+    return render_template('class_update.html', form=form)
         
 
-@app.route('classes/delete/<int:id>')
+@app.route('/classes/delete/<int:id>')
 def class_delete(id):
     clase = Class.query.get_or_404(id)
 
