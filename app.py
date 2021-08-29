@@ -224,7 +224,7 @@ class EditForm(FlaskForm):
 #         return 'Class ' + str(self.id) 
 
 class ClaseForm(FlaskForm):
-    name = StringField('Name', validators=[DataRequired(message='Name is Required'),])
+    name = StringField('Class name', validators=[DataRequired(message='Name is Required'),])
     submit = SubmitField('Create Class')
     
 
@@ -414,6 +414,7 @@ def user_delete(id):
         try:
             db.session.delete(user)
             db.session.commit()
+            flash('Your account has been successfully deleted')
             return redirect(url_for('welcome'))
         except:
             db.session.rollback()

@@ -28,6 +28,8 @@
             <br>
                 <a class="btn btn-primary px-2 me-md-1"  style="display: inline;" href="{{url_for('user_update', id = current_user.id)}}">Edit</a>
                 <a class="btn btn-danger px-2 me-md-1" style="display: inline;" href="{{url_for('logout')}}">Logout</a>
+                <br>
+                <br>
                 <a href="{{url_for('user_delete', id = current_user.id)}}">Delete account</a>
         </div>
         <div class="col-10 col-sm-8 col-lg-2 align-content-lg-end">
