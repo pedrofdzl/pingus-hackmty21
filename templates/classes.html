@@ -11,12 +11,12 @@
     
     {% if current_user.isTeacher %}
         {% for class in users.query.filter_by(current_user.id) %}
-        <h>Hola</h>
-        <ul>
-            <li>
-                {{class.name}}
-            </li>
-        </ul>
+            <h>Hola</h>
+            <ul>
+                <li>
+                    {{class.name}}
+                </li>
+            </ul>
         {% endfor %}
     {% endif %}
 

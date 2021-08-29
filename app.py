@@ -435,6 +435,7 @@ def class_create():
             flash('Class Registered Succesfuly!')
             return redirect(url_for('classes'))
         except:
+            db.session.rollback()
             flash('Hooooooly Guacamoooooleeeee... Something went wrong')
 
 
@@ -454,6 +455,7 @@ def class_update(id):
             db.session.commit()
             flash('Class Updated Succesfully!')
         except:
+            db.session.rollback()
             flash('Hooooooly Guacamoooooleeeee... Something went wrong')
 
     return render_template('class_update.html', form=form)
@@ -469,11 +471,16 @@ def class_delete(id):
         flash('Class Deleted Succesfully!')
 
     except:
+        db.session.rollback()
         flash('Hooooooly Guacamoooooleeeee... Something went wrong')
 
     return redirect(url_for(''))
-    
 
+@app.route('/classes/detail/<int:id>')
+def class_detail(id):
+    clase = Class.query.get_or_404(id)
+
+    return render_template('class_detail.html', clase=clase)
 
 # # Lectures
 # @app.route('/lecture')
