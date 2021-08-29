@@ -9,6 +9,10 @@ from flask_migrate import Migrate, current
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
 from sqlalchemy.ext.declarative import declarative_base
+<<<<<<< HEAD
+
+=======
+>>>>>>> 76d472d0f306a6a40b5de72825b268d2a8b69fc9
 from wtforms import StringField, SubmitField, PasswordField, BooleanField
 from wtforms.validators import DataRequired, EqualTo
 from wtforms.widgets import TextArea
@@ -46,8 +50,8 @@ db.session.commit()
 # Clases camelCase
 
 users = db.Table('users',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('class_id', db.ForeignKey('class.id'))
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('class_id', db.ForeignKey('class.id'), primary_key=True)
 )
 
 class User(db.Model, UserMixin):
@@ -62,8 +66,8 @@ class User(db.Model, UserMixin):
     score = db.Column(db.Integer, default=0)
     isTeacher = db.Column(db.Boolean, default=False)
     dateJoined = db.Column(db.DateTime)
-    blogPost_id = db.Column(db.Integer, db.ForeignKey('blogpost.id'))
-    blogPosts = db.relationship('BlogPost', backref='owner_user', uselist=True)
+    blogPosts = db.relationship('BlogPost', backref='owner_user', overlaps="blogPosts,owner_user")
+    submissions = db.relationship('Submission', backref='owner_user', uselist=True)
     notification_id = db.Column(db.Integer, db.ForeignKey('notification.id'))
 
     @property
@@ -124,6 +128,7 @@ class Assignment(db.Model):
     description = db.Column(db.Text, nullable=False)
     datePublished = db.Column(db.DateTime, nullable=False, default=datetime.today)
     dateDue = db.Column(db.DateTime, nullable=False, default=datetime.today)
+    submissions = db.relationship('Submission', backref='owner_assignment', uselist=True)
     class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
 
     def __repr__(self):
@@ -155,7 +160,8 @@ class BlogPost(db.Model):
     title = db.Column(db.String(255))
     content = db.Column(db.Text, nullable=False)
     date = db.Column(db.DateTime, nullable=False, default=datetime.today)
-    user = db.relationship('User', backref='owner_BlogPost')
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User', backref='owner_BlogPost', overlaps="blogPosts,owner_user")
     forum_id = db.Column(db.Integer, db.ForeignKey('forum.id'))
 
     def __repr__(self):
@@ -185,6 +191,15 @@ class Answer(db.Model):
 
     def __repr__(self):
         return 'Answer ' + str(self.id) 
+
+class Submission(db.Model):
+    id = db.Column(db.Integer, nullable=False, primary_key=True)
+    content = db.Column(db.Text, nullable=False)
+    grade = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'))
+
+
 
 
 ###############
@@ -437,6 +452,56 @@ def class_detail(id):
     clase = Class.query.get_or_404(id)
 
     return render_template('class_detail.html', clase=clase)
+
+
+@app.route('/classes/detail/<int:id>/students')
+def class_students(id):
+    clase = Class.query.get_or_404(id)
+    students = clase.users.filter_by(isTeacher=False).all()
+
+    # print(students)
+
+    return render_template('class_students.html', clase=clase, students=students)
+
+@app.route('/classes/detail/<int:id>/students/add-student', methods=['GET', 'POST'])
+def class_add_student(id):
+    clase = Class.query.get_or_404(id)
+    students = None
+
+    if request.method == "POST":
+        username = request.form['student']
+        students = User.query.filter_by(username=username, isTeacher=False).all()
+    
+    else:
+        students = User.query.filter_by(isTeacher=False).all()
+
+
+
+    return render_template('class_add_student.html', clase=clase, students=students)
+
+@app.route('/classes/detail/<int:classid>/students/add-student/<int:studid>')
+def class_add(classid, studid):
+
+    clase = Class.query.get_or_404(classid)
+    user = User.query.get_or_404(studid)
+
+    clase.users.append(user)
+    db.session.commit()
+
+    return redirect(url_for('class_students', id=clase.id))
+    
+@app.route('/classes/detail/<int:classid>/students/remove-student/<int:studid>')
+def class_remove(classid, studid):
+
+    clase = Class.query.get_or_404(classid, studid)
+    user = User.query.get_or_404(studid)
+
+    clase.users.remove(user)
+    db.session.commit()
+
+    return redirect(url_for('class_students', id=clase.id))
+
+
 
 # Lectures
 @app.route('/classes/detail/<int:classid>/lecture/create', methods=['GET', 'POST'])
