@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Delete Account</title>
+{% endblock %}
+
+{% block body %}
+<div class="px-4 py-5 my-5 text-center">
+    <h1 class="display-5 fw-bold">Delete account</h1>
+    <div class="col-lg-6 mx-auto">
+        <p class="lead mb-4">This will permanently delete your account. All your information and progress will be lost.</p>
+        <br>
+        <p class="lead mb-4">Are you sure?</p>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+        <form method="POST">
+            <button type="submit" class="btn btn-danger btn-lg px-4 gap-3">Delete account</button>
+            <a href="{{url_for('profile')}}" class="btn btn-primary btn-lg px-4">Go back</a>
+        </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

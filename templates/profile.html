@@ -9,15 +9,26 @@
 <div class="container col-sm-8 px-4 py-5 bg-light p-5 rounded">
     <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
         <div class="col-lg-8">
-            <h1 class="display-5 fw-bold lh-1 mb-3">Your Profile</h1>
-            <h4>Student</h4>
-            <p>Username: </p>
-            <p>Email: </p>  
-            <p>Classes: </p>  
-            <p>Email: </p>  
-            <div class="d-grid gap-2 d-md-flex justify-content-md-start">
-                <button type="button" class="btn btn-danger px-2 me-md-1">Logout</button>
-            </div>
+            <h1 class="display-5 fw-bold lh-1 mb-3">{{ current_user.firstName }} {{ current_user.lastName }}</h1>
+            <h3>
+                {% if current_user.isTeacher %}
+                Teacher
+                {% else %}
+                Student
+                {% endif %}
+            </h3>
+            <b>Username: </b><p style="display: inline;">{{ current_user.username }}</p>
+            <p> </p>
+            <b>Email: </b><p style="display: inline;">{{ current_user.email }}</p>
+            <p> </p>
+            <b>Classes: </b> 
+            <p> </p>
+            <b>Score: </b><p style="display: inline;">{{ current_user.score }}</p>
+            <br>
+            <br>
+                <a class="btn btn-primary px-2 me-md-1"  style="display: inline;" href="{{url_for('user_update', id = current_user.id)}}">Edit</a>
+                <a class="btn btn-danger px-2 me-md-1" style="display: inline;" href="{{url_for('logout')}}">Logout</a>
+                <a href="{{url_for('user_delete', id = current_user.id)}}">Delete account</a>
         </div>
         <div class="col-10 col-sm-8 col-lg-2 align-content-lg-end">
             <img src="https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg" class="d-block mx-lg-auto img-fluid float-start" alt="Bootstrap Themes" width="200"

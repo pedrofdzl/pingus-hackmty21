@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Edit Profile</title>
+{% endblock %}
+
+{% block body %}
+<div class="container col-xl-10 col-xxl-8 px-4 py-5">
+    <h2 class="display-4 fw-bold lh-1 mb-3 text-center">Edit profile</h1>
+        <br>
+        <div class="col-md-10 mx-auto col-lg-5">
+            {% for message in get_flashed_messages() %}
+            <p><strong>{{ message }}</strong></p><br>
+            {% endfor %}
+            <form class="p-4 p-md-5 border rounded-3 bg-light" method="POST">
+
+                    {{ form.hidden_tag() }}
+
+                <div class="form-floating mb-3">
+                    {{ form.username(class="form-control", id="floatingInput") }}
+                    <!-- <input type="username" class="form-control" id="floatingInput" placeholder="username"> -->
+                    {{ form.username.label() }}
+                    <!-- <label for="floatingInput">Username</label> -->
+                </div>
+                <div class="form-floating mb-3">
+                    {{ form.firstName(class="form-control", id="floatingInput") }}
+                    <!-- <input type="fullName" class="form-control" id="floatingInput" placeholder="fullname"> -->
+                    {{ form.firstName.label() }}
+                    <!-- <label for="floatingInput">Full name</label> -->
+                </div>
+                <div class="form-floating mb-3">
+                    {{ form.lastName(class="form-control", id="floatingInput") }}
+                    <!-- <input type="fullName" class="form-control" id="floatingInput" placeholder="fullname"> -->
+                    {{ form.lastName.label() }}
+                    <!-- <label for="floatingInput">Full name</label> -->
+                </div>
+                <div class="form-floating mb-3">
+                    {{ form.email(class="form-control", id="floatingInput") }}
+                    <!-- <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com"> -->
+                    {{ form.email.label() }}
+                    <!-- <label for="floatingInput">Email address</label> -->
+                </div>
+                {{ form.submit(class="w-100 btn btn-lg btn-primary") }}
+                <!-- <button class="w-100 btn btn-lg btn-primary" type="submit">Create account</button> -->
+                <hr class="my-4">
+            </form>
+        </div>
+</div>
+{% endblock %}

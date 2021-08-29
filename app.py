@@ -205,6 +205,12 @@ class RegisterForm(FlaskForm):
     isTeacher = BooleanField('Teacher')
     submit = SubmitField('Create account')
 
+class EditForm(FlaskForm):
+    username = StringField('Username', render_kw={'readonly': True})
+    firstName = StringField('First name', validators=[DataRequired(),])
+    lastName = StringField('Last name', validators=[DataRequired(),])
+    email = StringField('Email', render_kw={'readonly': True})
+    submit = SubmitField('Save changes')
 
 # class Class(db.Model):
 #     id = db.Column(db.Integer, nullable=False, primary_key=True)
@@ -219,6 +225,7 @@ class RegisterForm(FlaskForm):
 
 class ClaseForm(FlaskForm):
     name = StringField('Name', validators=[DataRequired(message='Name is Required'),])
+    submit = SubmitField('Create Class')
     
 
 # class Quiz(db.Model):
@@ -346,7 +353,7 @@ def welcome():
 
 
 @app.route('/register', methods=['GET', 'POST'])
-def register():
+def user_create():
     form = RegisterForm()
 
     if request.method == 'POST' and form.validate():
@@ -358,7 +365,24 @@ def register():
             return redirect(url_for('welcome'))
         except:
             flash("Something went wrong")
-    return render_template('register.html', form = form)
+    return render_template('user_create.html', form = form)
+
+@app.route('/edit-profile/<int:id>', methods=['GET', 'POST'])
+@login_required
+def user_update(id):
+    user = User.query.get_or_404(id)
+    form = EditForm(request.form, obj=user)
+
+    if request.method == 'POST' and form.validate():
+        user.firstName = form.firstName.data
+        user.lastName = form.lastName.data
+        try:
+            db.session.commit()
+            return redirect(url_for('profile'))
+        except:
+            db.session.rollback()
+            flash("Something went wrong")
+    return render_template('user_update.html', user = user, form = form)
 
 @app.route('/dashboard')
 @login_required
@@ -376,7 +400,7 @@ def classes():
     return render_template('classes.html')
     
 @app.route('/profile')
-#@login_required
+@login_required
 def profile():
     return render_template('profile.html')
 
@@ -385,8 +409,22 @@ def profile():
 @login_required
 def logout():
     logout_user()
-    flash('You\'ve logout')
+    flash('You\'ve logged out')
     return redirect(url_for('index'))
+
+@app.route('/delete-account/<int:id>', methods=['GET', 'POST'])
+@login_required
+def user_delete(id):
+    user = User.query.get_or_404(id)
+    if request.method == 'POST':
+        try:
+            db.session.delete(user)
+            db.session.commit()
+            return redirect(url_for('welcome'))
+        except:
+            db.session.rollback()
+            flash("Something went wrong")
+    return render_template('user_delete.html', user = user)
 
 @app.route('/classes/register', methods=['GET', 'POST'])
 def class_create():
@@ -397,10 +435,13 @@ def class_create():
 
         try:
             db.session.add(clase)
+            clase.users.append(current_user)
             db.session.commit()
 
             flash('Class Registered Succesfuly!')
+            return redirect(url_for('classes'))
         except:
+            db.session.rollback()
             flash('Hooooooly Guacamoooooleeeee... Something went wrong')
 
 
@@ -420,9 +461,10 @@ def class_update(id):
             db.session.commit()
             flash('Class Updated Succesfully!')
         except:
+            db.session.rollback()
             flash('Hooooooly Guacamoooooleeeee... Something went wrong')
 
-    return render_template('class_update.html')
+    return render_template('class_update.html', form=form)
         
 
 @app.route('/classes/delete/<int:id>', methods=['GET', 'POST'])
@@ -435,11 +477,16 @@ def class_delete(id):
         flash('Class Deleted Succesfully!')
 
     except:
+        db.session.rollback()
         flash('Hooooooly Guacamoooooleeeee... Something went wrong')
 
     return redirect(url_for(''))
-    
 
+@app.route('/classes/detail/<int:id>')
+def class_detail(id):
+    clase = Class.query.get_or_404(id)
+
+    return render_template('class_detail.html', clase=clase)
 
 # Lectures
 @app.route('/classses/detail/<int:classid>/lecture/create', methods=['GET', 'POST'])
@@ -506,7 +553,6 @@ def lecture_detail(classid, lectid):
     lecture = Lecture.query.get_or_404(lectid)
     
     return render_template('lecture_detail.html', clase=clase, lecture=lecture)
-
 
 
 
