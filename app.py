@@ -452,6 +452,7 @@ def class_create():
     return render_template('class_create.html', form=form)
 
 @app.route('/classes/update/<int:id>', methods=['GET', 'POST'])
+@login_required
 def class_update(id):
     
     clase = Class.query.get_or_404(id)
@@ -472,6 +473,7 @@ def class_update(id):
         
 
 @app.route('/classes/delete/<int:id>', methods=['GET', 'POST'])
+@login_required
 def class_delete(id):
     clase = Class.query.get_or_404(id)
 
@@ -488,6 +490,7 @@ def class_delete(id):
     return redirect(url_for(''))
 
 @app.route('/classes/detail/<int:id>')
+@login_required
 def class_detail(id):
     clase = Class.query.get_or_404(id)
 
@@ -495,6 +498,7 @@ def class_detail(id):
 
 
 @app.route('/classes/detail/<int:id>/students')
+@login_required
 def class_students(id):
     clase = Class.query.get_or_404(id)
     students = clase.users.filter_by(isTeacher=False).all()
@@ -504,6 +508,7 @@ def class_students(id):
     return render_template('class_students.html', clase=clase, students=students)
 
 @app.route('/classes/detail/<int:id>/students/add-student', methods=['GET', 'POST'])
+@login_required
 def class_add_student(id):
     clase = Class.query.get_or_404(id)
     students = None
@@ -520,6 +525,7 @@ def class_add_student(id):
     return render_template('class_add_student.html', clase=clase, students=students)
 
 @app.route('/classes/detail/<int:classid>/students/add-student/<int:studid>')
+@login_required
 def class_add(classid, studid):
 
     clase = Class.query.get_or_404(classid)
@@ -536,6 +542,7 @@ def class_add(classid, studid):
     return redirect(url_for('class_students', id=clase.id))
     
 @app.route('/classes/detail/<int:classid>/students/remove-student/<int:studid>')
+@login_required
 def class_remove(classid, studid):
 
     clase = Class.query.get_or_404(classid, studid)
@@ -555,6 +562,7 @@ def class_remove(classid, studid):
 
 # Lectures
 @app.route('/classes/detail/<int:classid>/lecture/create', methods=['GET', 'POST'])
+@login_required
 def lecture_create(classid):
 
     clase = Class.query.get_or_404(classid)
@@ -576,6 +584,7 @@ def lecture_create(classid):
 
 
 @app.route('/classes/detail/<int:classid>/lecture/update/<int:lectid>', methods=['GET', 'POST'])
+@login_required
 def lecture_update(classid, lectid):
 
     clase = Class.query.get_or_404(classid)
@@ -598,6 +607,7 @@ def lecture_update(classid, lectid):
 
 
 @app.route('/classes/detail/<int:classid>/lecture/delete/<int:lectid>')
+@login_required
 def lecture_delete(classid, lectid):
     clase = Class.query.get_or_404(classid)
     lecture = Lecture.query.get_or_404(lectid)
@@ -615,6 +625,7 @@ def lecture_delete(classid, lectid):
 
 
 @app.route('/classes/detail/<int:classid>/lecture/detail/<int:lectid>')
+@login_required
 def lecture_detail(classid, lectid):
     clase = Class.query.get_or_404(classid)
     lecture = Lecture.query.get_or_404(lectid)
@@ -623,6 +634,7 @@ def lecture_detail(classid, lectid):
 
 
 @app.route('/classes/detail/<int:classid>/assignment/create', methods=['GET', 'POST'])
+@login_required
 def assignment_create(classid):
     clase = Class.query.get_or_404(classid)
     form = AssignmentForm()
@@ -650,6 +662,7 @@ def assignment_create(classid):
 
 
 @app.route('/classes/detail/<int:classid>/assignment/update/<int:assid>', methods=['GET', 'POST'])
+@login_required
 def assignment_update(classid, assid):
     clase = Class.query.get_or_404(classid)
     assignment = Assignment.query.get_or_404(assid)
@@ -672,6 +685,7 @@ def assignment_update(classid, assid):
     return render_template('assignment_update.html', form=form, clase=clase, assignment=assignment)
 
 @app.route('/classes/detail/<int:classid>/assignment/detail/<int:assid>')
+@login_required
 def assignment_detail(classid, assid):
     clase = Class.query.get_or_404(classid)
     assignment = Assignment.query.get_or_404(assid)
@@ -686,6 +700,7 @@ def assignment_detail(classid, assid):
 
 
 @app.route('/classes/detail/<int:classid>/assignment/delete/<int:assid>')
+@login_required
 def assignment_delete(classid, assid):
     clase = Class.query.get_or_404(classid)
     assignment = Assignment.query.get_or_404(assid)
@@ -704,6 +719,7 @@ def assignment_delete(classid, assid):
 
 
 @app.route('/classes/detail/<int:classid>/assignment/detail/<int:assid>/submission', methods=['GET', 'POST'])
+@login_required
 def submission_upload(classid, assid):
     clase = Class.query.get_or_404(classid)
     assignment = Assignment.query.get_or_404(assid)
@@ -729,6 +745,7 @@ def submission_upload(classid, assid):
 
 
 @app.route('/classes/detail/<int:classid>/assignment/detail/<int:assid>/submission/<int:subid>')
+@login_required
 def submission_detail(classid, assid, subid):
     clase = Class.query.get_or_404(classid)
     assignment = Assignment.query.get_or_404(assid)
@@ -740,6 +757,7 @@ def submission_detail(classid, assid, subid):
 
 
 @app.route('/classes/detail/<int:classid>/assignment/detail/<int:assid>/submission/<int:subid>/update', methods=['GET', 'POST'])
+@login_required
 def submission_update(classid, assid, subid):
     clase = Class.query.get_or_404(classid)
     assignment = Assignment.query.get_or_404(assid)
@@ -763,6 +781,7 @@ def submission_update(classid, assid, subid):
 
 
 @app.route('/classes/detail/<int:classid>/assignment/detail/<int:assid>/submission/<int:subid>/delete')
+@login_required
 def submission_delete(classid, assid, subid):
     clase = Class.query.get_or_404(classid)
     assignment = Assignment.query.get_or_404(assid)
@@ -781,6 +800,7 @@ def submission_delete(classid, assid, subid):
 
 
 @app.route('/classes/detail/<int:classid>/assignment/detail/<int:assid>/submission/<int:subid>/grade', methods=['GET', 'POST'])
+@login_required
 def submission_grade(classid, assid, subid):
     clase = Class.query.get_or_404(classid)
     assignment = Assignment.query.get_or_404(assid)
@@ -805,6 +825,7 @@ def submission_grade(classid, assid, subid):
 
 
 @app.route('/classes/detail/<int:classid>/forum/blogPost/create', methods=['GET','POST'])
+@login_required
 def blogPost_create(classid):
     clase = Class.query.get_or_404(classid)
 
@@ -827,6 +848,7 @@ def blogPost_create(classid):
     return render_template('blogPost_create.html', form=form, clase=clase)
 
 @app.route('/classes/detail/<int:classid>/forum/blogPost/update/<int:postid>', methods=['GET','POST'])
+@login_required
 def blogPost_update(classid, postid):
     clase = Class.query.get_or_404(classid)
     blogPost = BlogPost.query.get_or_404(postid)
@@ -848,6 +870,7 @@ def blogPost_update(classid, postid):
     return render_template('blogPost_update.html', form=form)
 
 @app.route('/classes/detail/<int:classid>/forum/blogPost/delete/<int:postid>')
+@login_required
 def blogPost_delete(classid, postid):
     clase = Class.query.get_or_404(classid)
     blogPost = BlogPost.query.get_or_404(postid)
@@ -864,6 +887,7 @@ def blogPost_delete(classid, postid):
     return redirect(url_for('class_detail', id=clase.id))
 
 @app.route('/classes/detail/<int:classid>/forum/blogPost/detail/<int:postid>')
+@login_required
 def blogPost_detail(classid, postid):
     clase = Class.query.get_or_404(classid)
     blogPost = BlogPost.query.get_or_404(postid)
@@ -871,6 +895,7 @@ def blogPost_detail(classid, postid):
     return render_template('class_detail.html', clase=clase)
 
 @app.route('/classes/detail/<int:classid>/rankings')
+@login_required
 def class_rankings(classid):
     clase = Class.query.get_or_404(classid)
     users = clase.users.filter_by(isTeacher = False).order_by(User.score.desc()).all()
@@ -878,6 +903,7 @@ def class_rankings(classid):
     return render_template('class_rankings.html', clase=clase, users = users)
 
 @app.route('/classes/detail/<int:classid>/quiz/create', methods=['GET','POST'])
+@login_required
 def quiz_create(classid):
     clase = Class.query.get_or_404(classid)
 
@@ -899,6 +925,7 @@ def quiz_create(classid):
     return render_template('quiz_create.html', form=form, clase=clase)
 
 @app.route('/classes/detail/<int:classid>/quiz/detail/<int:quizid>')
+@login_required
 def quiz_detail(classid, quizid):
     clase = Class.query.get_or_404(classid)
     quiz = Quiz.query.get_or_404(quizid)
@@ -906,6 +933,7 @@ def quiz_detail(classid, quizid):
     return render_template('quiz_detail.html', clase=clase, quiz=quiz)
 
 @app.route('/classes/detail/<int:classid>/quiz/<int:quizid>/question/create', methods=['GET','POST'])
+@login_required
 def question_create(classid, quizid):
     clase = Class.query.get_or_404(classid)
     quiz = Quiz.query.get_or_404(quizid)
@@ -927,6 +955,7 @@ def question_create(classid, quizid):
     return render_template('question_create.html', form=form, clase=clase, quiz=quiz)
 
 @app.route('/classes/detail/<int:classid>/quiz/<int:quizid>/question/<int:questionid>/answer/create', methods=['GET','POST'])
+@login_required
 def answer_create(classid, questionid, quizid):
     clase = Class.query.get_or_404(classid)
     quiz = Quiz.query.get_or_404(quizid)
