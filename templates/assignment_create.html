@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+
+{% block head %}
+<title>Assignment</title>
+{% endblock %}
+
+
+{% block body %}
+    
+    <h1>Assignment Create</h1>
+
+    <form method="POST">
+
+        {{ form.hidden_tag() }}
+
+
+        {{ form.name.label(class="form-label") }}
+        {{ form.name(class="form-control") }} <br>
+        
+        {{ form.description.label(class="form-label") }}
+        {{ form.description(class="form-control") }} <br>
+       
+        {{ form.dueDate.label(class="form-label") }}
+        {{ form.dueDate(class="form-control") }} <br>
+
+        {{% form.submit() %}}
+
+
+    </form>
+
+
+{% endblock %}
