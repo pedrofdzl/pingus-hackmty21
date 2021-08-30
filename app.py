@@ -379,7 +379,8 @@ def grades():
     c = 0
     if submissions:
         for submission in submissions:
-            sum += submission.grade
+            if submission.grade:
+                sum += submission.grade
             c += 1
         if(c > 0):
             gpa = sum / c
@@ -402,7 +403,8 @@ def classes():
 def profile():
     sum = 0
     for submission in current_user.submissions:
-        sum += submission.grade
+        if submission.grade:
+            sum += submission.grade
     current_user.score = sum
     try:
         db.session.commit()
@@ -907,7 +909,8 @@ def class_rankings(classid):
     for user in users:
         sum =0 
         for submission in user.submissions:
-            sum += submission.grade
+            if submission.grade:
+                sum += submission.grade
         user.score = sum
         try:
             db.session.commit()
