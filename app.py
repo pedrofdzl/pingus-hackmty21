@@ -677,7 +677,7 @@ def assignment_update(classid, assid):
 
     if request.method == 'POST' and form.validate():
         assignment.name = form.name.data
-        assignment.description = form.name.data
+        assignment.description = form.description.data
         assignment.dateDue = form.dateDue.data
         
         try:
