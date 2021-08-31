@@ -23,5 +23,6 @@ Para el futuro de Genguin esperamos traer mas soporte para mas archivos y realiz
 <div align="center">
 <img src="https://i.ibb.co/wCp1RxY/penguin-1319972675762699888.png" alt="Logo" >
 </div>
-### pingus_hackmty21 
+
+### Pingus_HackMTY21 
 Repositorio equipo 21 HackMTY - Pingus Technology :penguin:
