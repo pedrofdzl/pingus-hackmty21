@@ -16,9 +16,9 @@
     <form method='POST'>
         <ol>
             {% for i in questions %}
-                <li>{{i.content}}</li>
+                <li>{{Question.query.get_or_404(i).content}}</li>
                 {% for j in questions[i] %}
-                    <input type='radio' name="{{i.id}}" value="{{j.content}}" id="{{j.id}}"/>{{j.content}}<br>
+                    <input type='radio' name="{{i}}" value="{{Answer.query.get_or_404(j).content}}" id="{{j}}"/>{{Answer.query.get_or_404(j).content}}<br>
                 {% endfor %}
             {% endfor %}
         </ol>

@@ -44,6 +44,12 @@ migrate = Migrate(app, db)
 db.create_all()
 db.session.commit()
 
+#imports for jinja
+@app.context_processor
+def add_imports():
+    # Note: we only define the top-level module names!
+    return dict(Question=Question, Answer=Answer)
+
 # Clases camelCase
 
 users = db.Table('users',
@@ -952,14 +958,24 @@ def quiz_respond(classid, quizid):
     clase = Class.query.get_or_404(classid)
     quiz = Quiz.query.get_or_404(quizid)
     questions = quiz.questions
-    question_list = {question:question.answers for question in questions}
+    #question_list = {question:question.answers for question in questions}
+
+    questions_dict = {}
+    for question in questions:
+        temp_answers = []
+        for answer in question.answers:
+            temp_answers.append(answer.id)
+        questions_dict[question.id] = temp_answers
+
+    print(questions_dict)
+    #answered = []
 
     if request.method=='POST':
-        for question in question_list:
-            answered = request.form.get(question.id)
-            print(answered)
+        for question in questions_dict:
+            answered = (request.form.to_dict())
+            print(answered.get(str(question)))
 
-    return render_template('respond_quiz.html', questions=question_list, clase=clase, quiz=quiz)
+    return render_template('respond_quiz.html', questions=questions_dict, clase=clase, quiz=quiz)
 
 @app.route('/classes/detail/<int:classid>/quiz/<int:quizid>/question/create', methods=['GET','POST'])
 @login_required
