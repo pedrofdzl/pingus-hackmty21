@@ -20,9 +20,18 @@ Esperamos que esta herramienta sea un ayuda a los profesores donde en los tiempo
 
 Para el futuro de Genguin esperamos traer mas soporte para mas archivos y realizar mejoras de funcionamiento del sistema.
 
+## Capturas de Pantalla
+
+![Welcome](images/docs/welcome.PNG "Welcome page")
+![classes](images/docs/classes.PNG "Classes page")
+![Welcome](images/docs/profile.PNG "Profile page")
+![Welcome](images/docs/grades.PNG "grades page")
+![Welcome](images/docs/Rankings.PNG "Rankings page")
+
+
 <div align="center">
 <img src="https://i.ibb.co/wCp1RxY/penguin-1319972675762699888.png" alt="Logo" >
-</div>
 
 ### Pingus_HackMTY21 
 Repositorio equipo 21 HackMTY - Pingus Technology :penguin:
+</div>
