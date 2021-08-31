@@ -10,6 +10,7 @@ from flask_migrate import Migrate, current
 
 # WHAT THE FORMS!!!
 from flask_wtf import FlaskForm
+from werkzeug.utils import import_string
 
 from wtforms import StringField, SubmitField, PasswordField, BooleanField, IntegerField
 from wtforms.fields.core import RadioField, SelectField
@@ -954,6 +955,7 @@ def quiz_detail(classid, quizid):
     return render_template('quiz_detail.html', clase=clase, quiz=quiz)
 
 @app.route('/classes/detail/<int:classid>/quiz/<int:quizid>/respond', methods=['GET','POST'])
+@login_required
 def quiz_respond(classid, quizid):
     clase = Class.query.get_or_404(classid)
     quiz = Quiz.query.get_or_404(quizid)
@@ -966,10 +968,13 @@ def quiz_respond(classid, quizid):
             temp_answers.append(answer.id)
         questions_dict[question.id] = temp_answers
 
+    correct = 0
     if request.method=='POST':
         for question in questions_dict:
             answered = (request.form.to_dict())
-            print(answered.get(str(question)))
+            if Answer.query.get_or_404(answered.get(str(question))).isRight == True:
+                correct += 1
+        return render_template('quiz_responded.html', questions=questions_dict, clase=clase, quiz=quiz, correct=correct, answered=answered)
 
     return render_template('quiz_respond.html', questions=questions_dict, clase=clase, quiz=quiz)
 

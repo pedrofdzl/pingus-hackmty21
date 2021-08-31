@@ -1,11 +1,13 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<title>Answers</title>
+<title>{{quiz.content}}</title>
 {% endblock %}
 
 {% block body %}
-<div class="container col-xl-10 col-xxl-8 px-4 py-5">
+<div class="mx-auto col-lg-8 px-0 my-5 text-left">
+    <h1 class="display-5 fw-bold lh-1 mb-3">{{quiz.name}}</h1>
+    <br>
     {% for message in get_flashed_messages() %}
     <div class="alert alert-warning alert-dismissible fade show" role="alert">
         <strong>{{ message }}</strong>
@@ -16,10 +18,12 @@
     <form method='POST'>
         <ol>
             {% for i in questions %}
-                <li>{{Question.query.get_or_404(i).content}}</li>
+                <strong><li>{{Question.query.get_or_404(i).content}}</li></strong>
                 {% for j in questions[i] %}
-                    <input type='radio' name="{{i}}" value="{{Answer.query.get_or_404(j).content}}" id="{{j}}"/>{{Answer.query.get_or_404(j).content}}<br>
+                    <input class="form-check-input" type='radio' name="{{i}}" value="{{Answer.query.get_or_404(j).id}}" id="{{j}}"/>&nbsp;{{Answer.query.get_or_404(j).content}}
+                    <br>
                 {% endfor %}
+                <br>
             {% endfor %}
         </ol>
         <input type="submit" value="Submit" />

@@ -16,13 +16,16 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 {% endfor %}
-                {% for question in quiz.questions %}
-                    <h5>{{ question.content }}</h5>
-                    {% for answer in question.answers %}
-                        <p>{{ answer.content }}</p>
-                    {% endfor %}
-                {% endfor %}
+                <ol>
+                    {% for question in quiz.questions %}
+                    <strong><li>{{ question.content }}</li></strong>
+                            {% for answer in question.answers %}
+                                <p>{{ answer.content }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                </ol>
             </div>
+
             <div>
                 {% if current_user.isTeacher %}
                 <a class='btn btn-success float-end' href="{{url_for('question_create', classid=clase.id, quizid=quiz.id)}}">Create Question</a>
