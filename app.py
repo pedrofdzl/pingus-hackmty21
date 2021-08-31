@@ -123,6 +123,7 @@ class Quiz(db.Model):
     date = db.Column(db.DateTime, nullable=False, default=datetime.today)
     questions = db.relationship('Question', backref='owner_quiz')
     class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
+    grade = db.Column(db.Float, nullable=True)
 
     def __repr__(self):
         return 'Quiz ' + str(self.id) 
@@ -969,12 +970,14 @@ def quiz_respond(classid, quizid):
         questions_dict[question.id] = temp_answers
 
     correct = 0
+    score = 0
     if request.method=='POST':
         for question in questions_dict:
             answered = (request.form.to_dict())
             if Answer.query.get_or_404(answered.get(str(question))).isRight == True:
                 correct += 1
-        return render_template('quiz_responded.html', questions=questions_dict, clase=clase, quiz=quiz, correct=correct, answered=answered)
+                score += Question.query.get_or_404(question).weight
+        return render_template('quiz_responded.html', questions=questions_dict, quiz=quiz, correct=correct, answered=answered, score=score)
 
     return render_template('quiz_respond.html', questions=questions_dict, clase=clase, quiz=quiz)
 
@@ -989,6 +992,8 @@ def question_create(classid, quizid):
         question = Question(content=form.content.data)
 
         try:
+            temp_weight = 100 / len(quiz.questions)
+            question.weight = temp_weight
             db.session.add(question)
             quiz.questions.append(question)
             db.session.commit()
