@@ -958,7 +958,6 @@ def quiz_respond(classid, quizid):
     clase = Class.query.get_or_404(classid)
     quiz = Quiz.query.get_or_404(quizid)
     questions = quiz.questions
-    #question_list = {question:question.answers for question in questions}
 
     questions_dict = {}
     for question in questions:
@@ -966,9 +965,6 @@ def quiz_respond(classid, quizid):
         for answer in question.answers:
             temp_answers.append(answer.id)
         questions_dict[question.id] = temp_answers
-
-    print(questions_dict)
-    #answered = []
 
     if request.method=='POST':
         for question in questions_dict:
