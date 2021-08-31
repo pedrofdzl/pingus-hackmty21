@@ -1000,9 +1000,7 @@ def question_create(classid, quizid):
                 temp_weight = 100 / len(quiz.questions)
                 print(temp_weight)
                 for question in quiz.questions: 
-                    db.session.delete(question)
-                    for answer in question.answers:
-                        db.session.add(answer)         
+                    db.session.delete(question)         
                     question.weight = temp_weight
                     db.session.add(question)
                     db.session.commit()
