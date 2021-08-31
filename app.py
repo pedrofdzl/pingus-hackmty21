@@ -992,13 +992,26 @@ def question_create(classid, quizid):
         question = Question(content=form.content.data)
 
         try:
-            temp_weight = 100 / len(quiz.questions)
-            question.weight = temp_weight
             db.session.add(question)
             quiz.questions.append(question)
             db.session.commit()
+
+            if len(quiz.questions) != 0:
+                temp_weight = 100 / len(quiz.questions)
+                print(temp_weight)
+                for question in quiz.questions:          
+                    db.session.delete(question)
+                    question.weight = temp_weight
+                    db.session.add(question)
+                    db.session.commit()
+
+            else:
+                temp_weight = 100
+                question.weight = temp_weight
+
             flash('Question Added Succesfully')
             return redirect(url_for('answer_create', classid=clase.id, questionid=question.id, quizid=quiz.id))
+
         except:
             db.session.rollback()
             flash('Hooooooly Guacamoooooleeeee... Something went wrong')
