@@ -1,4 +1,5 @@
 from operator import sub
+import re
 from typing import Text
 from flask import Flask, render_template, redirect, flash, url_for, request, session
 from datetime import datetime
@@ -11,7 +12,7 @@ from flask_migrate import Migrate, current
 from flask_wtf import FlaskForm
 
 from wtforms import StringField, SubmitField, PasswordField, BooleanField, IntegerField
-from wtforms.fields.core import SelectField
+from wtforms.fields.core import RadioField, SelectField
 from wtforms.validators import DataRequired, EqualTo, ValidationError
 from wtforms.widgets import TextArea
 from wtforms.ext.dateutil.fields import DateTimeField
@@ -42,6 +43,12 @@ migrate = Migrate(app, db)
 
 db.create_all()
 db.session.commit()
+
+#imports for jinja
+@app.context_processor
+def add_imports():
+    # Note: we only define the top-level module names!
+    return dict(Question=Question, Answer=Answer)
 
 # Clases camelCase
 
@@ -188,9 +195,6 @@ class Answer(db.Model):
     content = db.Column(db.Text, nullable=False)
     isRight = db.Column(db.Boolean, nullable=False, default=False)
     question_id = db.Column(db.Integer, db.ForeignKey('question.id'))
-
-    def __repr__(self):
-        return 'Answer ' + str(self.id) 
 
 class Submission(db.Model):
     id = db.Column(db.Integer, nullable=False, primary_key=True)
@@ -954,18 +958,24 @@ def quiz_respond(classid, quizid):
     clase = Class.query.get_or_404(classid)
     quiz = Quiz.query.get_or_404(quizid)
     questions = quiz.questions
-    #form = PreguntaForm()
-    question_list = {question:question.answers for question in questions}
+    #question_list = {question:question.answers for question in questions}
+
+    questions_dict = {}
+    for question in questions:
+        temp_answers = []
+        for answer in question.answers:
+            temp_answers.append(answer.id)
+        questions_dict[question.id] = temp_answers
+
+    print(questions_dict)
+    #answered = []
 
     if request.method=='POST':
-        for i in question_list.keys():
-            print(i)
-            answered = request.form.get(i)
-            print(answered)
-        # for field in request.data:
-        #     print(field)
+        for question in questions_dict:
+            answered = (request.form.to_dict())
+            print(answered.get(str(question)))
 
-    return render_template('respond_quiz.html', q=question_list, o=question_list, clase=clase, quiz=quiz)
+    return render_template('respond_quiz.html', questions=questions_dict, clase=clase, quiz=quiz)
 
 @app.route('/classes/detail/<int:classid>/quiz/<int:quizid>/question/create', methods=['GET','POST'])
 @login_required

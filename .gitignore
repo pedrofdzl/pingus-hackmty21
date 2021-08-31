@@ -1,2 +1,4 @@
+.gitignore
+
 pingus.db
-migrations
+migrations/
