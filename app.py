@@ -971,7 +971,7 @@ def quiz_respond(classid, quizid):
             answered = (request.form.to_dict())
             print(answered.get(str(question)))
 
-    return render_template('respond_quiz.html', questions=questions_dict, clase=clase, quiz=quiz)
+    return render_template('quiz_respond.html', questions=questions_dict, clase=clase, quiz=quiz)
 
 @app.route('/classes/detail/<int:classid>/quiz/<int:quizid>/question/create', methods=['GET','POST'])
 @login_required
