@@ -15,14 +15,14 @@
     
     <form method='POST'>
         <ol>
-            {% for i in q %}
+            {% for i in questions %}
                 <li>{{i.content}}</li>
-                {% for j in o[i] %}
-                    <input type='radio' value='{{j}}' name='{{i}}' />{{j.content}}
+                {% for j in questions[i] %}
+                    <input type='radio' name="{{i.id}}" value="{{j.content}}" id="{{j.id}}"/>{{j.content}}<br>
                 {% endfor %}
             {% endfor %}
         </ol>
-        <input type="submit" value="submit" />
+        <input type="submit" value="Submit" />
     </form>
 </div>
 {% endblock %}
