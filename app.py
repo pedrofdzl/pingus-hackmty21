@@ -58,6 +58,11 @@ users = db.Table('users',
     db.Column('class_id', db.ForeignKey('class.id'), primary_key=True)
 )
 
+assignment_users = db.Table('assignment_users',
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('assignment_id', db.ForeignKey('assignment.id'), primary_key=True)
+)
+
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
