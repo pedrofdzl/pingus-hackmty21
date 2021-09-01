@@ -142,7 +142,6 @@ class Assignment(db.Model):
     dateDue = db.Column(db.DateTime, nullable=False, default=datetime.today)
     submissions = db.relationship('Submission', backref='owner_assignment', uselist=True)
     class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
         return 'Activity ' + str(self.id) 
@@ -746,6 +745,7 @@ def submission_upload(classid, assid):
         submission.user_id = current_user.id
         submission.assignment_id = assignment.id
         submission.class_id = clase.id
+        current_user.assignments.remove(assignment)
         #current_user.assignmentsDoneId.append(assignment.id)
 
         try:
