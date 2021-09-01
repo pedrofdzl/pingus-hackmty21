@@ -41,7 +41,7 @@
     <div class="list-group">
         {% for as in assignments %}
         {% if not as.submited %}
-        <a href="{{url_for('classes')}}"
+        <a href="{{url_for('assignment_detail', classid=as.class_id, assid=as.id)}}"
             class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-between">
                 <h5 class="mb-1">{{as.name}}</h5>
@@ -58,7 +58,7 @@
     <hr>
     <div class="list-group">
         {% for sub in submissions %}
-        <a href="{{url_for('classes')}}"
+        <a href="{{url_for('submission_detail', classid=sub.class_id, assid=sub.assignment_id, subid=sub.id)}}"
             class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-between">
                 <h5 class="mb-1">{{Assignment.query.get_or_404(sub.assignment_id).name}}</h5>
@@ -67,7 +67,7 @@
             {% if sub.grade == None %}
             <small class="mb-1">Not graded yet</small>
             {% else %}
-            <small class="mb-1">Grade: {{sub.grade}}</small>
+            <small class="mb-1">Grade: {{sub.grade}}/100</small>
             {% endif %}
         </a>
         {% endfor %}

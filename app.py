@@ -205,6 +205,7 @@ class Submission(db.Model):
     date = db.Column(db.DateTime, nullable=False, default=datetime.today)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'))
+    class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
 
 ###############
 ### Forms ####
@@ -650,7 +651,7 @@ def assignment_create(classid):
 
     # print(form.dueDate.data)
     if request.method == 'POST' and form.validate():
-        assignment = Assignment(name=form.name.data, description=form.description.data, dateDue=form.dateDue.data)
+        assignment = Assignment(name=form.name.data, description=form.description.data, dateDue=form.dateDue.data, class_id=clase.id)
         students = User.query.filter_by(isTeacher = False).all()
         for student in students:
             for c in student.classes:
@@ -739,6 +740,7 @@ def submission_upload(classid, assid):
         submission = Submission(content=form.content.data)
         submission.user_id = current_user.id
         submission.assignment_id = assignment.id
+        submission.class_id = clase.id
         assignment.submited = True
 
         try:
