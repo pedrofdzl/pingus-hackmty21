@@ -40,7 +40,6 @@
     <hr>
     <div class="list-group">
         {% for as in assignments %}
-        {% if not as.submited %}
         <a href="{{url_for('assignment_detail', classid=as.class_id, assid=as.id)}}"
             class="list-group-item list-group-item-action flex-column align-items-start">
             <div class="d-flex w-100 justify-content-between">
@@ -48,7 +47,6 @@
             </div>
             <small class="mb-1">Due: {{as.dateDue}}</small>
         </a>
-        {% endif %}
         {% endfor %}
     </div>
 </div>

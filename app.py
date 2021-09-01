@@ -73,6 +73,7 @@ class User(db.Model, UserMixin):
     blogPosts = db.relationship('BlogPost', backref='owner_user', overlaps="blogPosts,owner_user")
     submissions = db.relationship('Submission', backref='owner_user', uselist=True)
     assignments = db.relationship('Assignment', backref='owner_user', uselist=True)
+    #assignmentsDoneId = db.Column(db.Integer)
     notification_id = db.Column(db.Integer, db.ForeignKey('notification.id'))
 
     @property
@@ -137,7 +138,6 @@ class Assignment(db.Model):
     submissions = db.relationship('Submission', backref='owner_assignment', uselist=True)
     class_id = db.Column(db.Integer, db.ForeignKey('class.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    submited = db.Column(db.Boolean, default=False)
 
     def __repr__(self):
         return 'Activity ' + str(self.id) 
@@ -654,9 +654,9 @@ def assignment_create(classid):
         assignment = Assignment(name=form.name.data, description=form.description.data, dateDue=form.dateDue.data, class_id=clase.id)
         students = User.query.filter_by(isTeacher = False).all()
         for student in students:
-            for c in student.classes:
-                if(c == clase):
-                    student.assignments.append(assignment)
+            if clase in student.classes:
+                student.assignments.append(assignment)
+                print(student.assignments)
         assignment.class_id = clase.id
 
         try:
@@ -741,7 +741,7 @@ def submission_upload(classid, assid):
         submission.user_id = current_user.id
         submission.assignment_id = assignment.id
         submission.class_id = clase.id
-        assignment.submited = True
+        #current_user.assignmentsDoneId.append(assignment.id)
 
         try:
             db.session.add(submission)
