@@ -2,9 +2,10 @@ from operator import sub
 import re
 from typing import Text
 from flask import Flask, render_template, redirect, flash, url_for, request, session
-from datetime import datetime
+from datetime import date, datetime
 
 # DB dependencies
+from sqlalchemy import desc
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate, current
 
@@ -19,7 +20,6 @@ from wtforms.widgets import TextArea
 from wtforms.ext.dateutil.fields import DateTimeField
 from sqlalchemy.orm import backref
 from sqlalchemy.ext.mutable import MutableList
-
 
 # Log In
 from flask_login import (
@@ -49,7 +49,7 @@ db.session.commit()
 @app.context_processor
 def add_imports():
     # Note: we only define the top-level module names!
-    return dict(Question=Question, Answer=Answer)
+    return dict(Question=Question, Answer=Answer, Assignment=Assignment)
 
 # Clases camelCase
 
@@ -202,11 +202,9 @@ class Submission(db.Model):
     id = db.Column(db.Integer, nullable=False, primary_key=True)
     content = db.Column(db.Text, nullable=False)
     grade = db.Column(db.Integer, nullable=True)
+    date = db.Column(db.DateTime, nullable=False, default=datetime.today)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     assignment_id = db.Column(db.Integer, db.ForeignKey('assignment.id'))
-
-
-
 
 ###############
 ### Forms ####
@@ -468,7 +466,6 @@ def class_create():
 def class_update(id):
     
     clase = Class.query.get_or_404(id)
-
     form = ClaseForm(request.form, obj=clase)
 
     if request.method == 'POST' and form.validate():
