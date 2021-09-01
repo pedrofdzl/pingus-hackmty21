@@ -77,7 +77,7 @@ class User(db.Model, UserMixin):
     dateJoined = db.Column(db.DateTime)
     blogPosts = db.relationship('BlogPost', backref='owner_user', overlaps="blogPosts,owner_user")
     submissions = db.relationship('Submission', backref='owner_user', uselist=True)
-    assignments = db.relationship('Assignment', backref='owner_user', uselist=True)
+    assignments = db.relationship('Assignment', secondary=assignment_users, backref=db.backref('users', lazy='dynamic'))
     #assignmentsDoneId = db.Column(db.Integer)
     notification_id = db.Column(db.Integer, db.ForeignKey('notification.id'))
 
